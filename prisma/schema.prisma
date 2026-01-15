@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client"
+  // This output path is critical for Next.js 15+ compatibility
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Note: NO 'url' line here
+}
+
+model Car {
+  id          String   @id @default(cuid())
+  make        String
+  model       String
+  pricePerDay Int
+  isAvailable Boolean  @default(true)
+  imageUrl    String?
+}
