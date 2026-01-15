@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.31.0",
+    "@emotion/react": "^11.14.0",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@tanstack/react-query": "^5.90.17",
@@ -16,10 +18,13 @@
     "@trpc/react-query": "^11.8.1",
     "@trpc/server": "^11.8.1",
     "dotenv": "^17.2.3",
+    "lucide-react": "^0.562.0",
     "next": "16.1.2",
+    "next-themes": "^0.4.6",
     "pg": "^8.17.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-icons": "^5.5.0",
     "superjson": "^2.2.6",
     "zod": "^4.3.5"
   },
