@@ -44,3 +44,28 @@ export { Prisma }
  * 
  */
 export type Car = Prisma.CarModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model Account
+ * 
+ */
+export type Account = Prisma.AccountModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model VerificationToken
+ * 
+ */
+export type VerificationToken = Prisma.VerificationTokenModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel

@@ -28,74 +28,102 @@ export type AggregateCar = {
 
 export type CarAvgAggregateOutputType = {
   pricePerDay: number | null
+  seats: number | null
 }
 
 export type CarSumAggregateOutputType = {
   pricePerDay: number | null
+  seats: number | null
 }
 
 export type CarMinAggregateOutputType = {
   id: string | null
-  make: string | null
-  model: string | null
+  name: string | null
+  type: string | null
   pricePerDay: number | null
+  seats: number | null
+  transmission: string | null
+  fuelType: string | null
+  image: string | null
   isAvailable: boolean | null
-  imageUrl: string | null
+  createdAt: Date | null
 }
 
 export type CarMaxAggregateOutputType = {
   id: string | null
-  make: string | null
-  model: string | null
+  name: string | null
+  type: string | null
   pricePerDay: number | null
+  seats: number | null
+  transmission: string | null
+  fuelType: string | null
+  image: string | null
   isAvailable: boolean | null
-  imageUrl: string | null
+  createdAt: Date | null
 }
 
 export type CarCountAggregateOutputType = {
   id: number
-  make: number
-  model: number
+  name: number
+  type: number
   pricePerDay: number
+  seats: number
+  transmission: number
+  fuelType: number
+  image: number
   isAvailable: number
-  imageUrl: number
+  createdAt: number
   _all: number
 }
 
 
 export type CarAvgAggregateInputType = {
   pricePerDay?: true
+  seats?: true
 }
 
 export type CarSumAggregateInputType = {
   pricePerDay?: true
+  seats?: true
 }
 
 export type CarMinAggregateInputType = {
   id?: true
-  make?: true
-  model?: true
+  name?: true
+  type?: true
   pricePerDay?: true
+  seats?: true
+  transmission?: true
+  fuelType?: true
+  image?: true
   isAvailable?: true
-  imageUrl?: true
+  createdAt?: true
 }
 
 export type CarMaxAggregateInputType = {
   id?: true
-  make?: true
-  model?: true
+  name?: true
+  type?: true
   pricePerDay?: true
+  seats?: true
+  transmission?: true
+  fuelType?: true
+  image?: true
   isAvailable?: true
-  imageUrl?: true
+  createdAt?: true
 }
 
 export type CarCountAggregateInputType = {
   id?: true
-  make?: true
-  model?: true
+  name?: true
+  type?: true
   pricePerDay?: true
+  seats?: true
+  transmission?: true
+  fuelType?: true
+  image?: true
   isAvailable?: true
-  imageUrl?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -187,11 +215,15 @@ export type CarGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type CarGroupByOutputType = {
   id: string
-  make: string
-  model: string
+  name: string
+  type: string
   pricePerDay: number
+  seats: number
+  transmission: string
+  fuelType: string
+  image: string
   isAvailable: boolean
-  imageUrl: string | null
+  createdAt: Date
   _count: CarCountAggregateOutputType | null
   _avg: CarAvgAggregateOutputType | null
   _sum: CarSumAggregateOutputType | null
@@ -219,20 +251,28 @@ export type CarWhereInput = {
   OR?: Prisma.CarWhereInput[]
   NOT?: Prisma.CarWhereInput | Prisma.CarWhereInput[]
   id?: Prisma.StringFilter<"Car"> | string
-  make?: Prisma.StringFilter<"Car"> | string
-  model?: Prisma.StringFilter<"Car"> | string
+  name?: Prisma.StringFilter<"Car"> | string
+  type?: Prisma.StringFilter<"Car"> | string
   pricePerDay?: Prisma.IntFilter<"Car"> | number
+  seats?: Prisma.IntFilter<"Car"> | number
+  transmission?: Prisma.StringFilter<"Car"> | string
+  fuelType?: Prisma.StringFilter<"Car"> | string
+  image?: Prisma.StringFilter<"Car"> | string
   isAvailable?: Prisma.BoolFilter<"Car"> | boolean
-  imageUrl?: Prisma.StringNullableFilter<"Car"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Car"> | Date | string
 }
 
 export type CarOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  make?: Prisma.SortOrder
-  model?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
+  transmission?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type CarWhereUniqueInput = Prisma.AtLeast<{
@@ -240,20 +280,28 @@ export type CarWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CarWhereInput | Prisma.CarWhereInput[]
   OR?: Prisma.CarWhereInput[]
   NOT?: Prisma.CarWhereInput | Prisma.CarWhereInput[]
-  make?: Prisma.StringFilter<"Car"> | string
-  model?: Prisma.StringFilter<"Car"> | string
+  name?: Prisma.StringFilter<"Car"> | string
+  type?: Prisma.StringFilter<"Car"> | string
   pricePerDay?: Prisma.IntFilter<"Car"> | number
+  seats?: Prisma.IntFilter<"Car"> | number
+  transmission?: Prisma.StringFilter<"Car"> | string
+  fuelType?: Prisma.StringFilter<"Car"> | string
+  image?: Prisma.StringFilter<"Car"> | string
   isAvailable?: Prisma.BoolFilter<"Car"> | boolean
-  imageUrl?: Prisma.StringNullableFilter<"Car"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Car"> | Date | string
 }, "id">
 
 export type CarOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  make?: Prisma.SortOrder
-  model?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
+  transmission?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.CarCountOrderByAggregateInput
   _avg?: Prisma.CarAvgOrderByAggregateInput
   _max?: Prisma.CarMaxOrderByAggregateInput
@@ -266,109 +314,155 @@ export type CarScalarWhereWithAggregatesInput = {
   OR?: Prisma.CarScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CarScalarWhereWithAggregatesInput | Prisma.CarScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Car"> | string
-  make?: Prisma.StringWithAggregatesFilter<"Car"> | string
-  model?: Prisma.StringWithAggregatesFilter<"Car"> | string
+  name?: Prisma.StringWithAggregatesFilter<"Car"> | string
+  type?: Prisma.StringWithAggregatesFilter<"Car"> | string
   pricePerDay?: Prisma.IntWithAggregatesFilter<"Car"> | number
+  seats?: Prisma.IntWithAggregatesFilter<"Car"> | number
+  transmission?: Prisma.StringWithAggregatesFilter<"Car"> | string
+  fuelType?: Prisma.StringWithAggregatesFilter<"Car"> | string
+  image?: Prisma.StringWithAggregatesFilter<"Car"> | string
   isAvailable?: Prisma.BoolWithAggregatesFilter<"Car"> | boolean
-  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Car"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Car"> | Date | string
 }
 
 export type CarCreateInput = {
   id?: string
-  make: string
-  model: string
+  name: string
+  type: string
   pricePerDay: number
+  seats: number
+  transmission: string
+  fuelType: string
+  image: string
   isAvailable?: boolean
-  imageUrl?: string | null
+  createdAt?: Date | string
 }
 
 export type CarUncheckedCreateInput = {
   id?: string
-  make: string
-  model: string
+  name: string
+  type: string
   pricePerDay: number
+  seats: number
+  transmission: string
+  fuelType: string
+  image: string
   isAvailable?: boolean
-  imageUrl?: string | null
+  createdAt?: Date | string
 }
 
 export type CarUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  make?: Prisma.StringFieldUpdateOperationsInput | string
-  model?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   pricePerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  seats?: Prisma.IntFieldUpdateOperationsInput | number
+  transmission?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CarUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  make?: Prisma.StringFieldUpdateOperationsInput | string
-  model?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   pricePerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  seats?: Prisma.IntFieldUpdateOperationsInput | number
+  transmission?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CarCreateManyInput = {
   id?: string
-  make: string
-  model: string
+  name: string
+  type: string
   pricePerDay: number
+  seats: number
+  transmission: string
+  fuelType: string
+  image: string
   isAvailable?: boolean
-  imageUrl?: string | null
+  createdAt?: Date | string
 }
 
 export type CarUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  make?: Prisma.StringFieldUpdateOperationsInput | string
-  model?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   pricePerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  seats?: Prisma.IntFieldUpdateOperationsInput | number
+  transmission?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CarUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  make?: Prisma.StringFieldUpdateOperationsInput | string
-  model?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   pricePerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  seats?: Prisma.IntFieldUpdateOperationsInput | number
+  transmission?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CarCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  make?: Prisma.SortOrder
-  model?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
+  transmission?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type CarAvgOrderByAggregateInput = {
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
 }
 
 export type CarMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  make?: Prisma.SortOrder
-  model?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
+  transmission?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type CarMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  make?: Prisma.SortOrder
-  model?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
+  transmission?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type CarSumOrderByAggregateInput = {
   pricePerDay?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -387,60 +481,80 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
 }
 
 
 
 export type CarSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  make?: boolean
-  model?: boolean
+  name?: boolean
+  type?: boolean
   pricePerDay?: boolean
+  seats?: boolean
+  transmission?: boolean
+  fuelType?: boolean
+  image?: boolean
   isAvailable?: boolean
-  imageUrl?: boolean
+  createdAt?: boolean
 }, ExtArgs["result"]["car"]>
 
 export type CarSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  make?: boolean
-  model?: boolean
+  name?: boolean
+  type?: boolean
   pricePerDay?: boolean
+  seats?: boolean
+  transmission?: boolean
+  fuelType?: boolean
+  image?: boolean
   isAvailable?: boolean
-  imageUrl?: boolean
+  createdAt?: boolean
 }, ExtArgs["result"]["car"]>
 
 export type CarSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  make?: boolean
-  model?: boolean
+  name?: boolean
+  type?: boolean
   pricePerDay?: boolean
+  seats?: boolean
+  transmission?: boolean
+  fuelType?: boolean
+  image?: boolean
   isAvailable?: boolean
-  imageUrl?: boolean
+  createdAt?: boolean
 }, ExtArgs["result"]["car"]>
 
 export type CarSelectScalar = {
   id?: boolean
-  make?: boolean
-  model?: boolean
+  name?: boolean
+  type?: boolean
   pricePerDay?: boolean
+  seats?: boolean
+  transmission?: boolean
+  fuelType?: boolean
+  image?: boolean
   isAvailable?: boolean
-  imageUrl?: boolean
+  createdAt?: boolean
 }
 
-export type CarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "make" | "model" | "pricePerDay" | "isAvailable" | "imageUrl", ExtArgs["result"]["car"]>
+export type CarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "pricePerDay" | "seats" | "transmission" | "fuelType" | "image" | "isAvailable" | "createdAt", ExtArgs["result"]["car"]>
 
 export type $CarPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Car"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    make: string
-    model: string
+    name: string
+    type: string
     pricePerDay: number
+    seats: number
+    transmission: string
+    fuelType: string
+    image: string
     isAvailable: boolean
-    imageUrl: string | null
+    createdAt: Date
   }, ExtArgs["result"]["car"]>
   composites: {}
 }
@@ -865,11 +979,15 @@ export interface Prisma__CarClient<T, Null = never, ExtArgs extends runtime.Type
  */
 export interface CarFieldRefs {
   readonly id: Prisma.FieldRef<"Car", 'String'>
-  readonly make: Prisma.FieldRef<"Car", 'String'>
-  readonly model: Prisma.FieldRef<"Car", 'String'>
+  readonly name: Prisma.FieldRef<"Car", 'String'>
+  readonly type: Prisma.FieldRef<"Car", 'String'>
   readonly pricePerDay: Prisma.FieldRef<"Car", 'Int'>
+  readonly seats: Prisma.FieldRef<"Car", 'Int'>
+  readonly transmission: Prisma.FieldRef<"Car", 'String'>
+  readonly fuelType: Prisma.FieldRef<"Car", 'String'>
+  readonly image: Prisma.FieldRef<"Car", 'String'>
   readonly isAvailable: Prisma.FieldRef<"Car", 'Boolean'>
-  readonly imageUrl: Prisma.FieldRef<"Car", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Car", 'DateTime'>
 }
     
 
