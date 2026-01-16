@@ -16,13 +16,17 @@ import { Menu } from "lucide-react"
 import NextLink from "next/link"
 import { useState } from "react"
 import Image from "next/image"
+import AuthModal from "@/components/auth/authModal"
 
 export default function Navbar() {
     const [open, setOpen] = useState(false)
 
+    // Auth Modal
+    const [isAuthOpen, setIsAuthOpen] = useState(false)
+
     const NavLinks = () => (
         <>
-             
+
             <ChakraLink asChild variant="plain" fontWeight="medium">
                 <NextLink href="/browse">List your Cars</NextLink>
             </ChakraLink>
@@ -54,7 +58,7 @@ export default function Navbar() {
             {/* Center/Right: Desktop Links */}
             <HStack gap="8" display={{ base: "none", md: "flex" }}>
                 <NavLinks />
-                <Button colorPalette="teal" variant="solid" rounded="full" px="6">
+                <Button colorPalette="teal" variant="solid" rounded="full" px="6" onClick={() => setIsAuthOpen(true)}>
                     Sign In
                 </Button>
             </HStack>
@@ -82,6 +86,11 @@ export default function Navbar() {
                     </DrawerContent>
                 </DrawerRoot>
             </Box>
+            {/* The Modal */}
+            <AuthModal
+                isOpen={isAuthOpen}
+                onClose={() => setIsAuthOpen(false)}
+            />
         </Flex>
     )
 }
