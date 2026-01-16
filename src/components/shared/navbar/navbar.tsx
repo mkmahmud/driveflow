@@ -22,11 +22,9 @@ export default function Navbar() {
 
     const NavLinks = () => (
         <>
+             
             <ChakraLink asChild variant="plain" fontWeight="medium">
-                <NextLink href="/">Home</NextLink>
-            </ChakraLink>
-            <ChakraLink asChild variant="plain" fontWeight="medium">
-                <NextLink href="/browse">Browse Cars</NextLink>
+                <NextLink href="/browse">List your Cars</NextLink>
             </ChakraLink>
         </>
     )

@@ -6,13 +6,13 @@ import { MapPin, Calendar } from "lucide-react"
 
 export default function Hero() {
     return (
-        <Box position="relative" h="80vh" w="full" bg="black" overflow="hidden">
+        <Box position="relative" h="80vh" w="full" bg="black" overflow="hidden" rounded="50px">
             {/* LAYER 1: Background Image */}
             <Box
                 position="absolute"
                 inset="0"
                 zIndex="0"
-                bgImage="url('/bg.jfif')" // Make sure this file is in your /public folder
+                bgImage="url('/bg.jpeg')" // Make sure this file is in your /public folder
                 bgSize="cover"
                 bgRepeat="no-repeat"
             />
