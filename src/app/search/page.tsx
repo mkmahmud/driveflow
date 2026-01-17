@@ -118,10 +118,6 @@ export default function SearchPage() {
 
                     <SimpleGrid columns={{ base: 1, md: 2 }} gap="6">
                         {/* We reuse the CarCard from the featured section */}
-                        <FeaturedCard name="Tesla Model S" price={150} seats={5} type="Electric" image="https://images.unsplash.com/photo-1560958089-b8a1929cea89" />
-                        <FeaturedCard name="BMW M4" price={200} seats={4} type="Luxury" image="https://images.unsplash.com/photo-1555215695-3004980ad54e" />
-                        <FeaturedCard name="Audi Q7" price={180} seats={7} type="SUV" image="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6" />
-                        <FeaturedCard name="Porsche 911" price={250} seats={2} type="Sports" image="https://images.unsplash.com/photo-1503376780353-7e6692767b70" />
                     </SimpleGrid>
                 </Box>
             </Grid>
