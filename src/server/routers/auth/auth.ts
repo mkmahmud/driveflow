@@ -4,21 +4,23 @@ import { db } from '../../db';
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const authRouter = router({
 
-    // Inside authRouter
+    // Me: Get current authenticated user
     me: publicProcedure.query(async ({ ctx }) => {
-        // 1. Get user ID from the Context (session/cookie)
         // @ts-ignore
         const userId = ctx.userId;
 
         if (!userId) return null;
 
-        // 2. Fetch the latest user data from Vercel Postgres
+        // Fetch user  
         const user = await db.user.findUnique({
             where: { id: userId },
-            select: { id: true, email: true, name: true } // Exclude password
+            select: { id: true, email: true, name: true }
         });
 
         return user;
@@ -31,7 +33,7 @@ export const authRouter = router({
     }),
 
 
-    //  SIGNUP: Create a new user
+    //  SIGNUP 
     signup: publicProcedure
         .input(z.object({
             name: z.string().min(2, "Name is too short"),
@@ -50,10 +52,10 @@ export const authRouter = router({
                 });
             }
 
-            // Hash password (12 rounds of salting is the industry standard)
+            // Hash password 
             const hashedPassword = await bcrypt.hash(password, 12);
 
-            // Create user in Vercel Postgres via Prisma
+            // Create user  
             const user = await db.user.create({
                 data: {
                     name,
@@ -65,7 +67,7 @@ export const authRouter = router({
             return { success: true, userId: user.id };
         }),
 
-    // 2. LOGIN: Verify credentials
+    //   LOGIN 
     login: publicProcedure
         .input(z.object({
             email: z.string().email(),
@@ -77,6 +79,7 @@ export const authRouter = router({
             // Find user
             const user = await db.user.findUnique({ where: { email } });
 
+
             if (!user || !user.password) {
                 throw new TRPCError({
                     code: 'UNAUTHORIZED',
@@ -84,7 +87,7 @@ export const authRouter = router({
                 });
             }
 
-            // Compare provided password with hashed password in DB
+            // Compare password  
             const isPasswordMatch = await bcrypt.compare(password, user.password);
             if (!isPasswordMatch) {
                 throw new TRPCError({
@@ -97,7 +100,7 @@ export const authRouter = router({
                 httpOnly: true,
                 secure: process.env.NODE_SCHEMA === 'production',
                 sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 1 week
+                maxAge: 60 * 60 * 24 * 7, // 1 week 
             });
 
             return {
@@ -106,5 +109,43 @@ export const authRouter = router({
             };
         }),
 
+    // Google Auth
+    googleAuth: publicProcedure
+        .input(z.object({ token: z.string() }))
+        .mutation(async ({ input }) => {
+            //   Verify the Google Token
+            const ticket = await client.verifyIdToken({
+                idToken: input.token,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
 
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid Google token' });
+            }
+
+            //  Sync with Database  
+            const user = await db.user.upsert({
+                where: { email: payload.email },
+                update: {
+                    name: payload.name,
+
+                },
+                create: {
+                    email: payload.email,
+                    name: payload.name || "Google User",
+                    password: "",
+                },
+            });
+
+            // Set cookie
+            (await cookies()).set('user-id', user.id, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7,
+            });
+
+            return { success: true, user };
+        }),
 });

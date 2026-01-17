@@ -3,18 +3,18 @@ import superjson from 'superjson';
 import { cookies } from 'next/headers';
 import { db } from './db';
 
-// 1. Create the Context
+//   Create the Context
 export const createTRPCContext = async () => {
     const cookieStore = await cookies();
     const userId = cookieStore.get('user-id')?.value;
 
     return {
         db,
-        userId, // Now ctx.userId will work!
+        userId,
     };
 };
 
-// 2. Initialize tRPC with Context type
+// Initialize tRPC  
 const t = initTRPC.context<typeof createTRPCContext>().create({
     transformer: superjson,
 });

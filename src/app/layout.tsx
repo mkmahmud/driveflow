@@ -6,6 +6,7 @@ import { Provider } from "@/components/ui/provider"
 import Navbar from "@/components/shared/navbar/navbar";
 import Footer from "@/components/shared/footer/footer";
 import { AuthProvider } from "@/hooks/useAuth";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="beforeInteractive"
+        />
         <TRPCProvider>
           <Provider>
             {/* AuthProvider must be inside TRPCProvider to use tRPC hooks */}

@@ -1,7 +1,7 @@
 "use client"
 
 import { trpc } from '@/trpc/client'
-import { useState, useEffect, createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 
 interface User {
     id: string
@@ -19,13 +19,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    // 1. Let tRPC manage the data fetching
+    //   tRPC data fetching
     const { data: user, isLoading, refetch } = trpc.auth.me.useQuery(undefined, {
         retry: false,
         staleTime: Infinity, // Keeps the user data "fresh" so it doesn't refetch constantly
     })
 
-    // 2. Use a mutation for logout to clear the server-side cookie
+    //    mutation for logout to clear the server-side cookie
     const utils = trpc.useUtils()
     const logoutMutation = trpc.auth.logout.useMutation({
         onSuccess: () => {
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (
         <AuthContext.Provider value={{
             // @ts-ignore
-            user: user ?? null, // Fallback to null if undefined
+            user: user ?? null,
             isLoading,
             logout,
             refreshUser: refetch

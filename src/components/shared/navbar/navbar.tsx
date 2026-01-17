@@ -23,6 +23,7 @@ export default function Navbar() {
     const [isAuthOpen, setIsAuthOpen] = useState(false)
     const { user, logout, isLoading } = useAuth();
 
+    // Nav links
     const NavLinks = () => (
         <>
             <ChakraLink asChild variant="plain" fontWeight="medium">
@@ -52,7 +53,7 @@ export default function Navbar() {
             backdropFilter="blur(10px)"
             backgroundColor="rgba(255, 255, 255, 0.9)"
         >
-            {/* Logo with gradient effect */}
+            {/* Logo */}
             <HStack gap="2" asChild cursor="pointer">
                 <NextLink href="/">
                     <Box

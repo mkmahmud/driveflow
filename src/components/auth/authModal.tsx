@@ -2,19 +2,17 @@
 
 import {
     Box, Button, Input, Stack, Text,
-    HStack, Separator, Center, Link
+    HStack, Separator, Center, Link, Spinner
 } from "@chakra-ui/react"
 import {
     DialogBody, DialogCloseTrigger, DialogContent,
     DialogHeader, DialogRoot, DialogTitle
 } from "@/components/ui/dialog"
 import { InputGroup } from "@/components/ui/input-group"
-import { Mail, Lock, Chrome, User } from "lucide-react"
-import { useState } from "react"
+import { Mail, Lock, User } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 import { trpc } from "@/trpc/client"
 import { useAuth } from "@/hooks/useAuth"
-
-// Ensure this path matches your trpc client init
 
 interface AuthModalProps {
     isOpen: boolean
@@ -24,67 +22,99 @@ interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const [authMode, setAuthMode] = useState<"signin" | "signup">("signin")
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const googleButtonRef = useRef<HTMLDivElement>(null)
 
+    // TRPC & AUTH UTILITIES
+    const utils = trpc.useUtils()
+    const { refreshUser } = useAuth()
 
-    const utils = trpc.useUtils();
-    const { refreshUser } = useAuth();
-
-
-    // 1. Form State
+    // FORM DATA STATE
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: ""
     })
 
-    // 2. tRPC Mutations
+    // --- MUTATIONS ---
+    // Signup
     const signupMutation = trpc.auth.signup.useMutation({
-        onSuccess: async (data: any) => {
-            console.log("Signup success:", data)
-            alert("Account created! Please sign in.")
+        onSuccess: () => {
             setAuthMode("signin")
             setErrorMessage(null)
+            alert("Account created successfully!")
         },
-
-        onError: (err: any) => {
-            setErrorMessage(err.message)
-        }
+        onError: (err) => setErrorMessage(err.message)
     })
-
+    // Login
     const loginMutation = trpc.auth.login.useMutation({
-        onSuccess: async (data: any) => {
-            console.log("Login success:", data);
-
-            // 2. Force tRPC to re-fetch the 'me' query globally
-            // This ensures the Navbar sees the new user immediately
-            await utils.auth.me.invalidate();
-
-            // 3. Optional: Call your manual refresh if you have extra logic there
-            await refreshUser();
-
-            onClose();
+        onSuccess: async () => {
+            await utils.auth.me.invalidate()
+            await refreshUser()
+            onClose()
         },
-        onError: (err: any) => {
-            setErrorMessage(err.message)
-        }
+        onError: (err) => setErrorMessage(err.message)
+    })
+    // Google Auth
+    const googleMutation = trpc.auth.googleAuth.useMutation({
+        onSuccess: async () => {
+            await utils.auth.me.invalidate()
+            await refreshUser()
+            onClose()
+        },
+        onError: (err) => setErrorMessage(err.message)
     })
 
-    // 3. Handlers
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    // Derived Loading States
+    const isEmailLoading = loginMutation.isPending || signupMutation.isPending;
+    const isGoogleLoading = googleMutation.isPending;
+    const isAnyLoading = isEmailLoading || isGoogleLoading;
 
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const renderGoogleButton = () => {
+            const google = (window as any).google;
+            if (google && googleButtonRef.current) {
+                google.accounts.id.initialize({
+                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+                    callback: (response: any) => {
+                        googleMutation.mutate({ token: response.credential });
+                    },
+                    use_fedcm_for_prompt: false
+                });
+
+                google.accounts.id.renderButton(googleButtonRef.current, {
+                    theme: "outline",
+                    size: "large",
+                    width: 340,
+                    text: "continue_with",
+                    shape: "rectangular",
+
+                });
+            }
+        };
+
+        renderGoogleButton();
+
+        const interval = setInterval(() => {
+            if (googleButtonRef.current?.innerHTML === "") {
+                renderGoogleButton();
+            } else {
+                clearInterval(interval);
+            }
+        }, 100);
+
+        return () => clearInterval(interval);
+    }, [isOpen, authMode, googleMutation]);
+
+    // FORM SUBMISSION HANDLER
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (isAnyLoading) return;
         setErrorMessage(null)
 
         if (authMode === "signup") {
-            signupMutation.mutate({
-                name: formData.name,
-                email: formData.email,
-                password: formData.password
-            })
+            signupMutation.mutate(formData)
         } else {
             loginMutation.mutate({
                 email: formData.email,
@@ -93,84 +123,90 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         }
     }
 
-    // @ts-ignore
-    const isLoading = signupMutation.isLoading || loginMutation.isLoading
-
     return (
-        <DialogRoot open={isOpen} onOpenChange={onClose} size="md" placement="center" >
+        <DialogRoot open={isOpen} onOpenChange={onClose} size="md" placement="center">
             <DialogContent rounded="2xl" p="4" as="form" bg="white" onSubmit={handleSubmit}>
-                <DialogCloseTrigger />
-
+                <DialogCloseTrigger disabled={isAnyLoading} />
                 <DialogHeader>
-                    <Center flexDirection="column" gap="2" mb="4" w="full">
+                    <Center flexDirection="column" gap="1" mb="2" w="full">
                         <DialogTitle fontSize="2xl" fontWeight="black">
                             {authMode === "signin" ? "Welcome Back" : "Create Account"}
                         </DialogTitle>
-                        <Text fontSize="sm" color="gray.500">
-                            {authMode === "signin" ? "Enter your details to access your account" : "Join DriveFlow and start your journey"}
-                        </Text>
                     </Center>
                 </DialogHeader>
 
                 <DialogBody>
-                    <Stack gap="6">
-                        {/* Error Message Display */}
+                    <Stack gap="4">
                         {errorMessage && (
-                            <Box bg="red.50" p="3" rounded="lg" border="1px solid" borderColor="red.200">
-                                <Text color="red.600" fontSize="xs" fontWeight="medium">{errorMessage}</Text>
+                            <Box bg="red.50" p="3" rounded="xl" border="1px solid" borderColor="red.100">
+                                <Text color="red.600" fontSize="xs">{errorMessage}</Text>
                             </Box>
                         )}
 
-                        <Button variant="outline" w="full" rounded="xl" gap="3" type="button">
-                            <Chrome size={20} /> Continue with Google
-                        </Button>
+                        {/* GOOGLE BUTTON CONTAINER */}
+                        <Box
+                            w="full"
+                            py="2"
+                            opacity={isEmailLoading ? 0.5 : 1}
+                            pointerEvents={isAnyLoading ? "none" : "auto"}
+                        >
+                            <div
+                                id="google-signin-div"
+                                ref={googleButtonRef}
+                                style={{ width: '100%', display: 'flex', justifyContent: 'center', minHeight: '44px' }}
+                            />
+                            {isGoogleLoading && (
+                                <HStack justify="center" mt="2" color="teal.600">
+                                    <Spinner size="xs" />
+                                    <Text fontSize="xs" fontWeight="bold">Syncing Google Profile...</Text>
+                                </HStack>
+                            )}
+                        </Box>
 
-                        <HStack>
+                        <HStack w="full">
                             <Separator flex="1" />
-                            <Text fontSize="xs" color="gray.400">OR</Text>
+                            <Text fontSize="2xs" color="gray.400" fontWeight="bold">OR EMAIL</Text>
                             <Separator flex="1" />
                         </HStack>
 
-                        <Stack gap="4">
+                        <Stack gap="3">
                             {authMode === "signup" && (
-                                <InputGroup w="full" startElement={<User size={16} color="gray" />}>
+                                <InputGroup w="full" startElement={<User size={16} />}>
                                     <Input
+                                        disabled={isAnyLoading}
                                         name="name"
                                         placeholder="Full Name"
-                                        variant="subtle"
-                                        h="12"
-                                        rounded="xl"
+                                        variant="flushed"
+                                        h="11"
                                         value={formData.name}
-                                        onChange={handleChange}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         required
                                     />
                                 </InputGroup>
                             )}
-
-                            <InputGroup w="full" startElement={<Mail size={16} color="gray" />}>
+                            <InputGroup w="full" startElement={<Mail size={16} />}>
                                 <Input
+                                    disabled={isAnyLoading}
                                     name="email"
-                                    placeholder="Email Address"
+                                    placeholder="Email"
                                     type="email"
-                                    variant="subtle"
-                                    h="12"
-                                    rounded="xl"
+                                    variant="flushed"
+                                    h="11"
                                     value={formData.email}
-                                    onChange={handleChange}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     required
                                 />
                             </InputGroup>
-
-                            <InputGroup w="full" startElement={<Lock size={16} color="gray" />}>
+                            <InputGroup w="full" startElement={<Lock size={16} />}>
                                 <Input
+                                    disabled={isAnyLoading}
                                     name="password"
                                     placeholder="Password"
                                     type="password"
-                                    variant="subtle"
-                                    h="12"
-                                    rounded="xl"
+                                    variant="flushed"
+                                    h="11"
                                     value={formData.password}
-                                    onChange={handleChange}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     required
                                 />
                             </InputGroup>
@@ -178,27 +214,25 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                             <Button
                                 type="submit"
                                 colorPalette="teal"
-                                h="12"
+                                h="11"
                                 rounded="xl"
                                 fontWeight="bold"
-                                loading={isLoading}
+                                loading={isEmailLoading}
+                                disabled={isGoogleLoading}
                             >
-                                {authMode === "signin" ? "Sign In" : "Register Now"}
+                                {authMode === "signin" ? "Sign In" : "Register"}
                             </Button>
                         </Stack>
 
-                        <Center mt="2">
-                            <Text fontSize="sm">
-                                {authMode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
+                        <Center mt="4">
+                            <Text fontSize="xs">
                                 <Link
-                                    onClick={() => {
-                                        setAuthMode(authMode === "signin" ? "signup" : "signin")
-                                        setErrorMessage(null)
-                                    }}
-                                    color="primary"
-                                    fontWeight="bold"
+                                    onClick={() => !isAnyLoading && setAuthMode(authMode === "signin" ? "signup" : "signin")}
+                                    color={isAnyLoading ? "gray.400" : "teal.600"}
+                                    fontWeight="black"
+                                    cursor={isAnyLoading ? "not-allowed" : "pointer"}
                                 >
-                                    {authMode === "signin" ? "Sign Up" : "Sign In"}
+                                    {authMode === "signin" ? "Create an account" : "Sign in instead"}
                                 </Link>
                             </Text>
                         </Center>
