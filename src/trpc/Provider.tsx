@@ -13,7 +13,14 @@ export default function TRPCProvider({ children }: { children: React.ReactNode }
             links: [
                 httpBatchLink({
                     url: '/api/trpc',
-                    transformer: superjson
+                    transformer: superjson,
+                    // ADD THIS: This sends headers (like cookies) to the server
+                    headers() {
+                        return {
+                            // If you use cookies, the browser handles this automatically,
+                            // but adding this block ensures tRPC is ready for custom headers.
+                        };
+                    },
                 }),
             ],
         })

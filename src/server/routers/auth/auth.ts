@@ -3,9 +3,35 @@ import { router, publicProcedure } from '../../trpc';
 import { db } from '../../db';
 import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
+import { cookies } from 'next/headers';
 
 export const authRouter = router({
-    // 1. SIGNUP: Create a new user
+
+    // Inside authRouter
+    me: publicProcedure.query(async ({ ctx }) => {
+        // 1. Get user ID from the Context (session/cookie)
+        // @ts-ignore
+        const userId = ctx.userId;
+
+        if (!userId) return null;
+
+        // 2. Fetch the latest user data from Vercel Postgres
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { id: true, email: true, name: true } // Exclude password
+        });
+
+        return user;
+    }),
+
+    logout: publicProcedure.mutation(async () => {
+        const cookieStore = await cookies();
+        cookieStore.delete('user-id');
+        return { success: true };
+    }),
+
+
+    //  SIGNUP: Create a new user
     signup: publicProcedure
         .input(z.object({
             name: z.string().min(2, "Name is too short"),
@@ -50,6 +76,7 @@ export const authRouter = router({
 
             // Find user
             const user = await db.user.findUnique({ where: { email } });
+
             if (!user || !user.password) {
                 throw new TRPCError({
                     code: 'UNAUTHORIZED',
@@ -66,10 +93,18 @@ export const authRouter = router({
                 });
             }
 
-            // In a production app, you'd now initialize a Session (e.g., via NextAuth)
+            (await cookies()).set('user-id', user.id, {
+                httpOnly: true,
+                secure: process.env.NODE_SCHEMA === 'production',
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7, // 1 week
+            });
+
             return {
                 success: true,
                 user: { id: user.id, email: user.email, name: user.name }
             };
         }),
+
+
 });
