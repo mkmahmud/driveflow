@@ -4,8 +4,7 @@ import FeaturedCars from '@/components/sections/home/featured';
 import Hero from '@/components/sections/home/hero';
 import ReadyToHit from '@/components/sections/home/readyToHit';
 import WhyChooseUs from '@/components/sections/home/whyChooseUs';
-import { trpc } from '@/trpc/client';
-
+ 
 
 export default function Home() {
 

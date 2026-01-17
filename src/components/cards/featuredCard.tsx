@@ -1,57 +1,181 @@
 "use client"
 
-import { Box, Image, Text, Badge, Flex, Stack, Card, Icon } from "@chakra-ui/react"
-import { Users } from "lucide-react"
+import { Box, Image, Text, Flex, Stack, HStack } from "@chakra-ui/react"
+import { Users, Star, Gauge, Sparkles } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface CarCardProps {
+  id: number
   name: string
   image: string
   price: number
   seats: number
-  type: string // e.g., "Luxury", "SUV"
+  type: string
+  rating: number
+  transmission: string
 }
 
-export function FeaturedCard({ name, image, price, seats, type }: CarCardProps) {
+export function FeaturedCard({ id, name, image, price, seats, type, rating, transmission }: CarCardProps) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/cars/${id}`)
+  }
+
   return (
-    <Card.Root maxW="sm" overflow="hidden" rounded="2xl" border="none" shadow="md" transition="all 0.3s" _hover={{ shadow: "xl", transform: "translateY(-4px)" }}>
+    <Box
+      onClick={handleClick}
+      cursor="pointer"
+      maxW="sm"
+      overflow="hidden"
+      rounded="2xl"
+      bg="white"
+      transition="all 0.3s ease"
+      border="1px solid"
+      borderColor="gray.200"
+      _hover={{
+        borderColor: "#0D9488",
+        transform: "translateY(-4px)"
+      }}
+    >
       <Box position="relative">
-        {/* Badge at top */}
-        <Badge
+        {/* Premium Badge */}
+        <Box
           position="absolute"
           top="4"
           left="4"
-          colorPalette="teal"
-          variant="solid"
-          rounded="full"
+          bg="#0D9488"
+          color="white"
           px="3"
+          py="1"
+          rounded="full"
+          fontSize="xs"
+          fontWeight="semibold"
+          zIndex="1"
+          display="flex"
+          alignItems="center"
+          gap="1"
+          backdropFilter="blur(4px)"
         >
+          <Sparkles size={12} />
           {type}
-        </Badge>
+        </Box>
+
+        {/* Rating Badge */}
+        <Box
+          position="absolute"
+          top="4"
+          right="4"
+          bg="white"
+          px="3"
+          py="1"
+          rounded="full"
+          fontSize="sm"
+          fontWeight="semibold"
+          zIndex="1"
+          display="flex"
+          alignItems="center"
+          gap="1"
+          border="1px solid"
+          borderColor="rgba(255, 255, 255, 0.2)"
+          backdropFilter="blur(4px)"
+        >
+          <Star size={14} color="#F59E0B" fill="#F59E0B" />
+          <Text color="#1E293B">{rating}</Text>
+        </Box>
 
         <Image
           src={image}
           alt={name}
-          h="200px"
+          h="220px"
           w="full"
           objectFit="cover"
         />
       </Box>
 
-      <Card.Body p="5">
-        <Flex justify="space-between" align="center" mb="2">
-          <Text fontWeight="bold" fontSize="xl" letterSpacing="tight">
+      <Box p="6">
+        <Flex justify="space-between" align="center" mb="4">
+          <Text
+            fontWeight="bold"
+            fontSize="xl"
+            color="#1E293B"
+            letterSpacing="tight"
+          >
             {name}
           </Text>
-          <Text fontWeight="extrabold" fontSize="xl" color="teal.600">
-            ${price}<Text as="span" fontSize="xs" color="gray.500" fontWeight="medium">/day</Text>
-          </Text>
+          <Box textAlign="right">
+            <Text
+              fontWeight="bold"
+              fontSize="2xl"
+              color="#0D9488"
+              lineHeight="1"
+            >
+              ${price}
+            </Text>
+            <Text
+              fontSize="sm"
+              color="#64748B"
+              fontWeight="medium"
+            >
+              /day
+            </Text>
+          </Box>
         </Flex>
 
-        <Flex align="center" gap="2" color="gray.500">
-          <Users size={16} />
-          <Text fontSize="sm">{seats} Seats</Text>
-        </Flex>
-      </Card.Body>
-    </Card.Root>
+        {/* Features */}
+        <HStack
+          justify="space-between"
+          mt="4"
+          pt="4"
+          borderTop="1px solid"
+          borderColor="gray.100"
+        >
+          <Stack align="center" gap="2">
+            <Box
+              p="2"
+              rounded="lg"
+              bg="rgba(13, 148, 136, 0.08)"
+              border="1px solid"
+              borderColor="rgba(13, 148, 136, 0.1)"
+            >
+              <Users size={18} color="#0D9488" />
+            </Box>
+            <Text fontSize="sm" color="#64748B" fontWeight="medium">
+              {seats} Seats
+            </Text>
+          </Stack>
+
+          <Stack align="center" gap="2">
+            <Box
+              p="2"
+              rounded="lg"
+              bg="rgba(13, 148, 136, 0.08)"
+              border="1px solid"
+              borderColor="rgba(13, 148, 136, 0.1)"
+            >
+              <Gauge size={18} color="#0D9488" />
+            </Box>
+            <Text fontSize="sm" color="#64748B" fontWeight="medium">
+              {transmission}
+            </Text>
+          </Stack>
+
+          <Stack align="center" gap="2">
+            <Box
+              p="2"
+              rounded="lg"
+              bg="rgba(13, 148, 136, 0.08)"
+              border="1px solid"
+              borderColor="rgba(13, 148, 136, 0.1)"
+            >
+              <Star size={18} color="#0D9488" />
+            </Box>
+            <Text fontSize="sm" color="#64748B" fontWeight="medium">
+              {rating}/5
+            </Text>
+          </Stack>
+        </HStack>
+      </Box>
+    </Box>
   )
 }
