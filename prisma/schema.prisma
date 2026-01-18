@@ -30,8 +30,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String?   // Optional: only used for Credentials login
-  role          Role      @default(USER) // Added for your Car Rental logic
+  password      String?    
+  role          Role      @default(USER)  
   accounts      Account[]
   sessions      Session[]
   
@@ -87,6 +87,8 @@ model VerificationToken {
 enum Role {
   USER
   ADMIN
+  SUPER_ADMIN
+  HOST
 }
 
 // Example Booking model to get you started

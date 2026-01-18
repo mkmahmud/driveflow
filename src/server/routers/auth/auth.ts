@@ -20,7 +20,7 @@ export const authRouter = router({
         // Fetch user  
         const user = await db.user.findUnique({
             where: { id: userId },
-            select: { id: true, email: true, name: true }
+            select: { id: true, email: true, name: true, role: true }
         });
 
         return user;
@@ -105,7 +105,7 @@ export const authRouter = router({
 
             return {
                 success: true,
-                user: { id: user.id, email: user.email, name: user.name }
+                user: { id: user.id, email: user.email, name: user.name, role: user.role },
             };
         }),
 

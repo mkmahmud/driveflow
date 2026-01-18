@@ -17,6 +17,7 @@ import { useState } from "react"
 import Image from "next/image"
 import AuthModal from "@/components/auth/authModal"
 import { useAuth } from "@/hooks/useAuth"
+import Link from "next/link"
 
 export default function Navbar() {
     const [open, setOpen] = useState(false)
@@ -28,7 +29,7 @@ export default function Navbar() {
         <>
             <ChakraLink asChild variant="plain" fontWeight="medium">
                 <NextLink href="/browse" >
-                    <HStack gap="1" px="3" outline="none" py="2" borderRadius="lg" _hover={{ bg: "primary/5" }}>
+                    <HStack _hover={{ color: "primary" }} gap="1" px="3" outline="none" py="2" borderRadius="lg" >
                         <Car size={16} color="black" />
                         <Text color="black">List your Cars</Text>
                     </HStack>
@@ -134,6 +135,9 @@ export default function Navbar() {
                             borderRadius="xl"
                             borderWidth="1px"
                             borderColor="gray.200"
+                            position="absolute"
+                            right="10"
+                            top="14"
                         >
                             <MenuItem
                                 value="profile"
@@ -142,7 +146,7 @@ export default function Navbar() {
                                 _hover={{ bg: "primary.50" }}
                             >
                                 <UserIcon size={16} />
-                                <Text fontWeight="medium">Profile</Text>
+                                <Text fontWeight="medium"> <Link href="/dashboard">Profile</Link> </Text>
                             </MenuItem>
                             <MenuItem
                                 value="logout"
