@@ -3,6 +3,8 @@ import { Card } from "@chakra-ui/react"
 import { useAuth } from "@/hooks/useAuth"
 import { AlertTriangle, ChevronRight, Truck, Users } from "lucide-react";
 import DataTable from "../DataTable";
+import { trpc } from "@/trpc/client";
+import { useEffect } from "react";
 
 interface Booking {
     id: string
@@ -40,7 +42,11 @@ const dummyData: Booking[] = [
 ]
 
 
+
+
 export default function AdminHome() {
+
+ 
     return (
         <Box>
             <Stack gap="6">
