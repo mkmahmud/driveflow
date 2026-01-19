@@ -25,7 +25,7 @@ export default function Hero() {
         params.append("location", pickupLocation.trim())
         
         if (pickupDate) {
-            params.append("date", pickupDate)
+            params.append("startDate", pickupDate)
         }
         
         router.push(`/search${params.toString() ? `?${params.toString()}` : ""}`)
@@ -59,6 +59,18 @@ export default function Hero() {
 
     return (
         <Box position="relative" minH="90vh" w="full" overflow="hidden" bg="gray.50">
+             <Box
+                position="absolute" top="-10%" right="-5%"
+                w="500px" h="500px" bg="teal.100/30"
+                rounded="full" filter="blur(80px)"
+            />
+             <Box
+                position="absolute" bottom="-10%" left="-5%"
+                w="400px" h="400px" bg="teal.50"
+                rounded="full" filter="blur(60px)"
+            />
+
+
             <Center h="full" minH="90vh" px="4">
                 <Stack 
                     gap={{ base: "8", md: "10" }} 
@@ -188,6 +200,7 @@ export default function Hero() {
 
                     {/* Search Box */}
                     <Box w="full" maxW="3xl" mt={{ base: "8", md: "12" }}>
+                        
                         <Box bg="white" border="1px solid" borderColor="gray.200" rounded="xl" p={{ base: "6", md: "8" }} shadow="0 10px 25px rgba(0, 0, 0, 0.05)">
                             <Text 
                                 color="#1E293B" 

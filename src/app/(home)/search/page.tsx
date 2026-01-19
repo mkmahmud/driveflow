@@ -2,75 +2,37 @@
 
 import {
     Box, Container, SimpleGrid, Flex, Text, Heading, Stack,
-    Separator, HStack, Button, Grid, Badge, Icon
+    Separator, HStack, Button, Grid, Badge, Icon, Skeleton
 } from "@chakra-ui/react"
 import { X, SlidersHorizontal, ChevronDown, MapPin } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
 import { useState } from "react"
- import { CarCard } from "@/components/cards/carCard"
-
- const MOCK_CARS = [
-    {
-        id: 1,
-        name: "Porsche 911 Carrera",
-        image: "https://wallpapercave.com/wp/wp8517595.jpg",  
-        price: 320,
-        seats: 2,
-        type: "Sports",
-        rating: 4.9,
-        transmission: "Automatic",
-        fuelType: "Petrol"
-    },
-    {
-        id: 2,
-        name: "Tesla Model Y",
-        image: "https://i.ytimg.com/vi/HD73VQTXIVI/sddefault.jpg",
-        price: 120,
-        seats: 5,
-        type: "Electric",
-        rating: 4.8,
-        transmission: "Single-Speed",
-        fuelType: "Electric"
-    },
-    {
-        id: 3,
-        name: "Range Rover Sport",
-        image: "https://images.all-free-download.com/images/thumbjpg/car_picture_modern_realistic_elegance_6934668.jpg",
-        price: 240,
-        seats: 7,
-        type: "Luxury",
-        rating: 4.7,
-        transmission: "Automatic",
-        fuelType: "Hybrid"
-    },
-    {
-        id: 4,
-        name: "BMW 5 Series",
-        image: "https://wallpapers.com/images/featured/lamborghini-lbun8b8ehlv3j8to.jpg",
-        price: 150,
-        seats: 5,
-        type: "Sedan",
-        rating: 4.6,
-        transmission: "Automatic",
-        fuelType: "Diesel"
-    },
-    {
-        id: 5,
-        name: "Mercedes G-Wagon",
-        image: "https://cdn.wallpapersafari.com/50/98/mWCM5I.jpg",
-        price: 450,
-        seats: 5,
-        type: "Luxury",
-        rating: 5.0,
-        transmission: "Automatic",
-        fuelType: "Petrol"
-    }
-];
+import { CarCard } from "@/components/cards/carCard"
+import { trpc } from "@/trpc/client"
+import { useSearchParams } from "next/navigation"
 
 export default function SearchPage() {
+    const searchParams = useSearchParams();
+
+    // Values from URL or defaults
+    const location = searchParams.get("location") || "Dhaka";
+    const startDate = searchParams.get("startDate") || new Date().toISOString();
+    const endDate = searchParams.get("endDate") || new Date().toISOString();
+
+    // Filter States
     const [priceRange, setPriceRange] = useState([50, 400])
     const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+
+    // REAL DATA QUERY
+    const { data: cars, isLoading } = trpc.car.getAllCars.useQuery({
+        location,
+        startDate,
+        endDate,
+        minPrice: priceRange[0],
+        maxPrice: priceRange[1],
+        types: selectedTypes,
+    });
 
     const toggleType = (type: string) => {
         setSelectedTypes(prev =>
@@ -83,7 +45,7 @@ export default function SearchPage() {
             <Container maxW="breakpoint-xl" py="10">
                 <Grid templateColumns={{ base: "1fr", lg: "300px 1fr" }} gap="12">
 
-                    {/* SIDEBAR FILTERS */}
+                    {/* SIDEBAR FILTERS (Your Design) */}
                     <Stack
                         gap="8"
                         as="aside"
@@ -93,6 +55,7 @@ export default function SearchPage() {
                         bg="white"
                         p="6"
                         rounded="2xl"
+                        shadow="sm"
                     >
                         <Flex align="center" gap="2" mb="2">
                             <SlidersHorizontal size={18} />
@@ -109,7 +72,7 @@ export default function SearchPage() {
                             </Flex>
                             <Slider
                                 min={0}
-                                max={1000}
+                                max={10000}
                                 step={10}
                                 value={priceRange}
                                 onValueChange={(e) => setPriceRange(e.value)}
@@ -139,16 +102,6 @@ export default function SearchPage() {
 
                         <Separator borderColor="gray.50" />
 
-                        {/* Features */}
-                        <Stack gap="4">
-                            <Text fontWeight="semibold" fontSize="sm">Instant Features</Text>
-                            <Stack gap="3">
-                                <Checkbox colorPalette="teal" size="sm"><Text fontSize="sm">Instant Book</Text></Checkbox>
-                                <Checkbox colorPalette="teal" size="sm"><Text fontSize="sm">Self Check-in</Text></Checkbox>
-                                <Checkbox colorPalette="teal" size="sm"><Text fontSize="sm">Unlimited Miles</Text></Checkbox>
-                            </Stack>
-                        </Stack>
-
                         <Button
                             variant="ghost"
                             color="gray.500"
@@ -164,7 +117,7 @@ export default function SearchPage() {
                         </Button>
                     </Stack>
 
-                    {/* RESULTS AREA */}
+                    {/* RESULTS AREA (Your Design) */}
                     <Box>
                         {/* Header Section */}
                         <Stack gap="6" mb="8">
@@ -181,11 +134,11 @@ export default function SearchPage() {
                                     </Heading>
                                     <HStack mt="2" color="gray.500">
                                         <MapPin size={14} />
-                                        <Text fontSize="sm">124 cars available in New York</Text>
+                                        <Text fontSize="sm">{isLoading ? "Searching..." : `${cars?.length || 0} cars available in ${location}`}</Text>
                                     </HStack>
                                 </Box>
 
-                                <Button variant="solid" rounded="full" size="sm" px="4">
+                                <Button variant="solid" rounded="full" size="sm" px="4" bg="white" border="1px solid" borderColor="gray.200">
                                     Sort by: Recommended <ChevronDown size={14} />
                                 </Button>
                             </Flex>
@@ -208,34 +161,46 @@ export default function SearchPage() {
                                             gap="2"
                                         >
                                             {type}
-                                            <X
-                                                size={14}
-                                                style={{ cursor: 'pointer' }}
-                                                onClick={() => toggleType(type)}
-                                            />
+                                            <X size={14} style={{ cursor: 'pointer' }} onClick={() => toggleType(type)} />
                                         </Badge>
                                     ))}
                                 </HStack>
                             )}
                         </Stack>
 
-                        {/* Grid of Cars */}
+                        {/* Grid of Real Cars */}
                         <SimpleGrid columns={{ base: 1, md: 2 }} gap="8">
-                            {/* Example Placeholder Cards */}
-                            {
-
-                                MOCK_CARS.map(car => <CarCard key={car.id} {...car} />)
-
-
-                            }
+                            {isLoading ? (
+                                [1, 2, 3, 4].map(i => <Skeleton key={i} h="400px" rounded="3xl" />)
+                            ) : cars && cars.length > 0 ? (
+                                cars.map(car => (
+                                    <CarCard
+                                        key={car.id}
+                                        // @ts-ignore
+                                        id={car.id}
+                                        name={car.name}
+                                        image={car.image}
+                                        price={car.pricePerDay}
+                                        type={car.type}
+                                        transmission={car.transmission[0]}
+                                        fuelType={car.fuelType}
+                                        rating={4.9}
+                                    />
+                                ))
+                            ) : (
+                                <Box gridColumn="1/-1" py="20" textAlign="center">
+                                    <Text color="gray.400" fontSize="lg">No cars found matching your criteria.</Text>
+                                </Box>
+                            )}
                         </SimpleGrid>
 
-                        {/* Pagination or Load More (Optional) */}
-                        <Flex justify="center" mt="12">
-                            <Button variant="surface" rounded="xl" px="10">
-                                Load More Vehicles
-                            </Button>
-                        </Flex>
+                        {!isLoading && cars && cars.length > 0 && (
+                            <Flex justify="center" mt="12">
+                                <Button variant="surface" rounded="xl" px="10">
+                                    Load More Vehicles
+                                </Button>
+                            </Flex>
+                        )}
                     </Box>
                 </Grid>
             </Container>

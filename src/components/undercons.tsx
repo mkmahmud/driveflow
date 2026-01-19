@@ -20,7 +20,7 @@ export default function UnderConstruction() {
                 position="absolute" top="-10%" right="-5%"
                 w="500px" h="500px" bg="teal.100/30"
                 rounded="full" filter="blur(80px)"
-            />
+            /> 
             <Box
                 position="absolute" bottom="-10%" left="-5%"
                 w="400px" h="400px" bg="teal.50"
@@ -59,7 +59,7 @@ export default function UnderConstruction() {
 
                     {/* Interactive Notification Card */}
                     <Box
-                        bg="white" p="8" rounded="3xl" shadow="2xl"
+                        bg="white" p="8" rounded="3xl" 
                         border="1px solid" borderColor="gray.100" w="full" maxW="450px"
                     >
                         <Stack gap="4">
