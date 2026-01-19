@@ -30,6 +30,13 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
         roles: ['HOST']
     },
     {
+        id: 'add-new-car',
+        label: 'Add New Car',
+        href: '/dashboard/host/add-new-car',
+        icon: 'Plus',
+        roles: ['HOST']
+    },
+    {
         id: 'earnings',
         label: 'Earnings',
         href: '/dashboard/host/earnings',

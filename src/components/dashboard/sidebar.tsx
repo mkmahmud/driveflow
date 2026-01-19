@@ -188,12 +188,13 @@ export default function Sidebar() {
                 bg="white"
                 borderRight="1px solid"
                 borderColor="gray.200"
-                zIndex="1001"
+                zIndex="10001"
                 transform={{
                     base: mobileOpen ? "translateX(0)" : "translateX(-100%)",
                     lg: "translateX(0)"
                 }}
                 transition="transform 0.3s ease"
+
             >
                 {/* Logo & User Info */}
                 <Box p="6" borderBottom="1px solid" borderColor="gray.100">

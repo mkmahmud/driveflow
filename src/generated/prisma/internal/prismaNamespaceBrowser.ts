@@ -51,12 +51,13 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Car: 'Car',
   User: 'User',
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
-  Booking: 'Booking'
+  Car: 'Car',
+  Booking: 'Booking',
+  Review: 'Review'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,22 +74,6 @@ export const TransactionIsolationLevel = {
 } as const
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const CarScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  type: 'type',
-  pricePerDay: 'pricePerDay',
-  seats: 'seats',
-  transmission: 'transmission',
-  fuelType: 'fuelType',
-  image: 'image',
-  isAvailable: 'isAvailable',
-  createdAt: 'createdAt'
-} as const
-
-export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -143,16 +128,61 @@ export const VerificationTokenScalarFieldEnum = {
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+export const CarScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  type: 'type',
+  pricePerDay: 'pricePerDay',
+  securityDeposit: 'securityDeposit',
+  seats: 'seats',
+  transmission: 'transmission',
+  fuelType: 'fuelType',
+  engineSize: 'engineSize',
+  horsepower: 'horsepower',
+  image: 'image',
+  images: 'images',
+  description: 'description',
+  isAvailable: 'isAvailable',
+  availableFrom: 'availableFrom',
+  availableTo: 'availableTo',
+  location: 'location',
+  lat: 'lat',
+  lng: 'lng',
+  hostId: 'hostId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
+
+
 export const BookingScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  carId: 'carId',
   startDate: 'startDate',
   endDate: 'endDate',
-  status: 'status'
+  totalPrice: 'totalPrice',
+  status: 'status',
+  carId: 'carId',
+  userId: 'userId',
+  createdAt: 'createdAt'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const ReviewScalarFieldEnum = {
+  id: 'id',
+  rating: 'rating',
+  comment: 'comment',
+  carId: 'carId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
 export const SortOrder = {

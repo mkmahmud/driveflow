@@ -28,7 +28,7 @@ export default function Navbar() {
     const NavLinks = () => (
         <>
             <ChakraLink asChild variant="plain" fontWeight="medium">
-                <NextLink href="/browse" >
+                <NextLink href="/dashboard/host/add-new-car" >
                     <HStack _hover={{ color: "primary" }} gap="1" px="3" outline="none" py="2" borderRadius="lg" >
                         <Car size={16} color="black" />
                         <Text color="black">List your Cars</Text>
