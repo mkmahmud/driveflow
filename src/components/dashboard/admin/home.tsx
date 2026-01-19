@@ -45,8 +45,10 @@ const dummyData: Booking[] = [
 
 
 export default function AdminHome() {
+    const { data: users, isLoading } = trpc.user.getAllUser.useQuery()
 
- 
+
+
     return (
         <Box>
             <Stack gap="6">
@@ -57,19 +59,14 @@ export default function AdminHome() {
                             <Stack>
                                 <HStack justify="space-between" align="flex-start">
                                     <Box>
-                                        <Text color="gray.500" fontSize="sm" fontWeight="medium">Active Users</Text>
-                                        <Heading size="lg" mt="1" color="teal.500">12,450</Heading>
+                                        <Text color="gray.500" fontSize="sm" fontWeight="medium"> Users</Text>
+                                        <Heading size="4xl" mt="1" color="teal.500">{users?.length || 0}</Heading>
                                     </Box>
                                     <Box bg="blue.50" p="3" borderRadius="lg">
                                         <Icon as={Users} boxSize="6" color="blue.500" />
                                     </Box>
                                 </HStack>
-                                <HStack>
-                                    <Text color="green.500" fontSize="sm" fontWeight="medium">
-                                        <Icon as={ChevronRight} boxSize="3" /> ~5.2%
-                                    </Text>
-                                    <Text color="gray.500" fontSize="sm">from last month</Text>
-                                </HStack>
+
                             </Stack>
                         </CardBody>
                     </Card.Root>
@@ -81,18 +78,13 @@ export default function AdminHome() {
                                 <HStack justify="space-between" align="flex-start">
                                     <Box>
                                         <Text color="gray.500" fontSize="sm" fontWeight="medium">Open Disputes</Text>
-                                        <Heading size="lg" mt="1" color="orange.500">18</Heading>
+                                        <Heading size="4xl" mt="1" color="orange.500">18</Heading>
                                     </Box>
                                     <Box bg="orange.50" p="3" borderRadius="lg">
                                         <Icon as={AlertTriangle} boxSize="6" color="orange.500" />
                                     </Box>
                                 </HStack>
-                                <HStack>
-                                    <Text color="green.500" fontSize="sm" fontWeight="medium">
-                                        <Icon as={ChevronRight} boxSize="3" /> ~2.1%
-                                    </Text>
-                                    <Text color="gray.500" fontSize="sm">from last month</Text>
-                                </HStack>
+                              
                             </Stack>
                         </CardBody>
                     </Card.Root>
@@ -104,18 +96,13 @@ export default function AdminHome() {
                                 <HStack justify="space-between" align="flex-start">
                                     <Box>
                                         <Text color="gray.500" fontSize="sm" fontWeight="medium">Fleet Utilization</Text>
-                                        <Heading size="lg" mt="1" color="green.500">84%</Heading>
+                                        <Heading size="4xl" mt="1" color="green.500">84%</Heading>
                                     </Box>
                                     <Box bg="green.50" p="3" borderRadius="lg">
                                         <Icon as={Truck} boxSize="6" color="green.500" />
                                     </Box>
                                 </HStack>
-                                <HStack>
-                                    <Text color="green.500" fontSize="sm" fontWeight="medium">
-                                        <Icon as={ChevronRight} boxSize="3" /> ~1.5%
-                                    </Text>
-                                    <Text color="gray.500" fontSize="sm">from last month</Text>
-                                </HStack>
+                                 
                             </Stack>
                         </CardBody>
                     </Card.Root>

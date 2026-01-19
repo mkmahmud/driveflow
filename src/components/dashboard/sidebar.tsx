@@ -197,7 +197,7 @@ export default function Sidebar() {
                 {/* Logo & User Info */}
                 <Box p="6" borderBottom="1px solid" borderColor="gray.100">
                     <NextLink href="/" >
-                        <HStack direction="row" align="center" mb="6" gap="2"  > 
+                        <HStack direction="row" align="center"   gap="2"  > 
 
                             <Box
                                 position="relative"
@@ -231,37 +231,11 @@ export default function Sidebar() {
                         </HStack>
                     </NextLink>
 
-                    {/* User Profile */}
-                    <Flex align="center" gap="3">
-                        <Avatar.Root size="sm" bg="#0D9488" color="white">
-                            <Avatar.Fallback name={user?.name || "User"} />
-                        </Avatar.Root>
-                        <Box flex="1">
-                            <Text fontSize="sm" fontWeight="semibold" color="#1E293B">
-                                {user?.name || "User"}
-                            </Text>
-                            <Flex align="center" gap="2">
-                                <Badge
-                                    colorPalette={
-                                        user?.role === 'ADMIN' ? 'red' :
-                                            user?.role === 'HOST' ? 'blue' : 'teal'
-                                    }
-                                    variant="subtle"
-                                    size="sm"
-                                    rounded="full"
-                                >
-                                    {user?.role?.toUpperCase() || 'USER'}
-                                </Badge>
-                                <Text fontSize="xs" color="#64748B">
-                                    {user?.email}
-                                </Text>
-                            </Flex>
-                        </Box>
-                    </Flex>
+                    
                 </Box>
 
                 {/* Navigation Links */}
-                <Box flex="1" overflowY="auto" p="4">
+                <Box flex="1" overflowY="auto" p="4" >
                     <Stack gap="1">
                         {filteredLinks.map(link => renderLink(link))}
                     </Stack>
