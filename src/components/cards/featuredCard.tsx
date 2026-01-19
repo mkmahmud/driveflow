@@ -19,7 +19,7 @@ export function FeaturedCard({ id, name, image, price, seats, type, rating, tran
   const router = useRouter()
 
   const handleClick = () => {
-    router.push(`/cars/${id}`)
+    router.push(`/search/${id}`)
   }
 
   return (
