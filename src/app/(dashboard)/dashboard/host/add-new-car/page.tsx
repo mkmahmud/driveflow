@@ -1,5 +1,6 @@
 "use client"
 
+import { trpc } from "@/trpc/client"
 import {
   Box, Button, Container, Flex, Heading, Input,
   Stack, Text, SimpleGrid, Circle,
@@ -9,11 +10,18 @@ import {
   MapPin, Calendar, DollarSign, Info,
   Upload, ChevronRight, Zap, Settings2, X
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useState, useRef } from "react"
 
 export default function AddNewCar() {
   const [step, setStep] = useState(1)
+  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const router = useRouter()
+
+  // NEW: State to hold the actual File objects for S3
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -36,26 +44,35 @@ export default function AddNewCar() {
     images: [] as string[]
   })
 
+  // tRPC Hooks
+  const getUploadUrl = trpc.car.getUploadUrl.useMutation();
+  const addCar = trpc.car.addCar.useMutation();
+
   const nextStep = () => setStep(s => s + 1)
   const prevStep = () => setStep(s => s - 1)
 
-  // --- WORKING IMAGE HANDLER ---
+  // --- IMAGE HANDLER ---
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const fileArray = Array.from(files);
-    // Create temporary local URLs so we can see the images and log them
+
+    // 1. Store the actual File objects for the S3 upload process
+    setSelectedFiles(prev => [...prev, ...fileArray]);
+
+    // 2. Store the local URLs for UI previewing
     const newImagePreviewUrls = fileArray.map(file => URL.createObjectURL(file));
 
     setFormData(prev => ({
       ...prev,
-      image: newImagePreviewUrls[0], // Set the first one as primary
-      images: [...prev.images, ...newImagePreviewUrls] // Add all to the gallery
+      image: prev.image || newImagePreviewUrls[0],
+      images: [...prev.images, ...newImagePreviewUrls]
     }));
   };
 
   const removeImage = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     setFormData(prev => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
@@ -63,18 +80,50 @@ export default function AddNewCar() {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log("Final Vehicle Data for Prisma:", {
-      ...formData,
-      year: Number(formData.year),
-      pricePerDay: Number(formData.pricePerDay),
-      securityDeposit: Number(formData.securityDeposit),
-      seats: Number(formData.seats),
-      horsepower: Number(formData.horsepower),
-      availableFrom: formData.availableFrom ? new Date(formData.availableFrom) : null,
-      availableTo: formData.availableTo ? new Date(formData.availableTo) : null,
-    });
-    alert("Check console to see all your data including images!");
+  // --- FINAL SUBMIT LOGIC ---
+  const handleSubmit = async () => {
+    try {
+      setIsUploading(true);
+      const finalS3Urls: string[] = [];
+
+      // 1. Upload each file to S3
+      for (const file of selectedFiles) {
+        const { signedUrl, publicUrl } = await getUploadUrl.mutateAsync({
+          fileName: file.name,
+          fileType: file.type,
+        });
+
+        await fetch(signedUrl, {
+          method: "PUT",
+          body: file,
+          headers: { "Content-Type": file.type },
+        });
+
+        finalS3Urls.push(publicUrl);
+      }
+
+      // 2. Send data to tRPC Backend
+      await addCar.mutateAsync({
+        ...formData,
+        year: Number(formData.year),
+        pricePerDay: Number(formData.pricePerDay),
+        securityDeposit: Number(formData.securityDeposit),
+        seats: Number(formData.seats),
+        horsepower: Number(formData.horsepower),
+        availableFrom: formData.availableFrom ? new Date(formData.availableFrom) : null,
+        availableTo: formData.availableTo ? new Date(formData.availableTo) : null,
+        image: finalS3Urls[0] || "", // First image is primary
+        images: finalS3Urls,        // Array of all S3 links
+      });
+
+      router.push('/dashboard/host/mycars');
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong during upload.");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -97,6 +146,7 @@ export default function AddNewCar() {
               fileInputRef={fileInputRef}
               handleImageUpload={handleImageUpload}
               removeImage={removeImage}
+              isUploading={isUploading}
             />
           )}
         </Box>
@@ -118,8 +168,13 @@ function BasicDetails({ formData, setFormData, onNext }: any) {
         <Field.Root w="full">
           <Field.Label fontSize="xs" fontWeight="bold" color="gray.500" mb="2">Year</Field.Label>
           <NativeSelect.Root size="lg" w="full">
-            <NativeSelect.Field bg="gray.50" rounded="xl" border="1px solid" borderColor="gray.100" h="14" value={formData.year} onChange={(e) => setFormData({ ...formData, year: e.target.value })}>
-              {years.map(y => <option className="bg-white" key={y} value={y}>{y}</option>)}
+            <NativeSelect.Field
+              bg="gray.50" rounded="xl" border="1px solid" borderColor="gray.100" h="14"
+              value={formData.year}
+              onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+              css={{ "& option": { background: "white", color: "black" } }}
+            >
+              {years.map(y => <option key={y} value={y}>{y}</option>)}
             </NativeSelect.Field>
           </NativeSelect.Root>
         </Field.Root>
@@ -161,16 +216,14 @@ function TechnicalSpecs({ formData, setFormData, onNext, onPrev }: any) {
   )
 }
 
-/* --- STEP 3: MEDIA (FIXED FOR UPLOADS) --- */
-function MediaUpload({ formData, setFormData, onPrev, onSubmit, fileInputRef, handleImageUpload, removeImage }: any) {
+/* --- STEP 3: MEDIA --- */
+function MediaUpload({ formData, setFormData, onPrev, onSubmit, fileInputRef, handleImageUpload, removeImage, isUploading }: any) {
   return (
     <Stack gap="6" w="full">
       <Heading size="lg" fontWeight="800">3. Finalize Listing</Heading>
 
-      {/* Hidden native input */}
       <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} style={{ display: 'none' }} />
 
-      {/* Clickable Dropzone */}
       <Box
         border="2px dashed" borderColor="teal.200" rounded="3xl" p="10" bg="teal.50/20"
         textAlign="center" w="full" cursor="pointer" _hover={{ bg: "teal.50" }}
@@ -181,7 +234,6 @@ function MediaUpload({ formData, setFormData, onPrev, onSubmit, fileInputRef, ha
         <Text fontSize="xs" color="gray.500">You can select multiple photos at once</Text>
       </Box>
 
-      {/* Visual Preview of uploaded images */}
       {formData.images.length > 0 && (
         <SimpleGrid columns={{ base: 2, md: 4 }} gap="4">
           {formData.images.map((url: string, index: number) => (
@@ -205,8 +257,15 @@ function MediaUpload({ formData, setFormData, onPrev, onSubmit, fileInputRef, ha
       </Stack>
 
       <Flex gap="4" mt="4" direction={{ base: "column", md: "row" }}>
-        <Button variant="surface" flex="1" h="14" rounded="2xl" onClick={onPrev}>Back</Button>
-        <Button colorPalette="teal" flex="2" h="14" rounded="2xl" fontWeight="black" onClick={onSubmit}>Submit to Console</Button>
+        <Button variant="surface" flex="1" h="14" rounded="2xl" onClick={onPrev} disabled={isUploading}>Back</Button>
+        <Button
+          colorPalette="teal" flex="2" h="14" rounded="2xl" fontWeight="black"
+          onClick={onSubmit}
+          loading={isUploading}
+          loadingText="Uploading to S3..."
+        >
+          Submit Vehicle
+        </Button>
       </Flex>
     </Stack>
   )
@@ -230,7 +289,14 @@ function SelectField({ label, options, onChange, value }: any) {
     <Field.Root w="full">
       <Field.Label fontSize="xs" fontWeight="bold" color="gray.500" mb="2" ml="1">{label}</Field.Label>
       <NativeSelect.Root size="lg" w="full">
-        <NativeSelect.Field bg="gray.50" rounded="xl" border="1px solid" borderColor="gray.100" h="14" w="full" value={value} onChange={(e) => onChange(e.target.value)}>{options.map((opt: string) => <option className="bg-white" key={opt} value={opt}>{opt}</option>)}</NativeSelect.Field>
+        <NativeSelect.Field
+          bg="gray.50" rounded="xl" border="1px solid" borderColor="gray.100" h="14" w="full"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          css={{ "& option": { background: "white", color: "black" } }}
+        >
+          {options.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+        </NativeSelect.Field>
       </NativeSelect.Root>
     </Field.Root>
   )

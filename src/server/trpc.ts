@@ -41,5 +41,19 @@ export const adminProcedure = t.procedure.use(isAuthed).use(async ({ next, ctx }
     return next({ ctx: { user } });
 });
 
+export const hostProcedure = t.procedure.use(isAuthed).use(async ({ next, ctx }) => {
+    const user = await db.user.findUnique({
+        where: { id: ctx.userId },
+        select: { role: true }
+    });
+
+    if (user?.role !== 'HOST') {
+        // @ts-ignore
+        throw new TRPCError({ code: 'FORBIDDEN', message: "Host access required" });
+    }
+
+    return next({ ctx: { user } });
+});
+
 export const router = t.router;
 export const publicProcedure = t.procedure;
