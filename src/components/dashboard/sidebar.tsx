@@ -116,6 +116,7 @@ export default function Sidebar() {
                         bg: "rgba(13, 148, 136, 0.05)",
                         color: "#0D9488"
                     }}
+                    cursor={"pointer"}
                     transition="all 0.2s"
                 >
                     <HStack gap="3">
@@ -150,7 +151,7 @@ export default function Sidebar() {
                 position="fixed"
                 top="4"
                 left="4"
-                zIndex="1001"
+                zIndex="10001"
             >
                 <IconButton
                     aria-label="Toggle menu"
@@ -187,12 +188,13 @@ export default function Sidebar() {
                 bg="white"
                 borderRight="1px solid"
                 borderColor="gray.200"
-                zIndex="1001"
+                zIndex="10001"
                 transform={{
                     base: mobileOpen ? "translateX(0)" : "translateX(-100%)",
                     lg: "translateX(0)"
                 }}
                 transition="transform 0.3s ease"
+
             >
                 {/* Logo & User Info */}
                 <Box p="6" borderBottom="1px solid" borderColor="gray.100">
@@ -235,8 +237,8 @@ export default function Sidebar() {
                 </Box>
 
                 {/* Navigation Links */}
-                <Box flex="1" overflowY="auto" p="4" >
-                    <Stack gap="1">
+                <Box flex="1" overflowY="auto" p="4"  >
+                    <Stack gap="1"  >
                         {filteredLinks.map(link => renderLink(link))}
                     </Stack>
                 </Box>

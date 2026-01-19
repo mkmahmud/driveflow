@@ -9,39 +9,30 @@ datasource db {
   // Note: NO 'url' line here
 }
 
-model Car {
-  id           String   @id @default(cuid())
-  name         String
-  type         String   // e.g., "SUV", "Luxury"
-  pricePerDay  Int
-  seats        Int
-  transmission String   // "Automatic" or "Manual"
-  fuelType     String   // "Petrol", "Electric", "Hybrid"
-  image        String   // URL to image
-  isAvailable  Boolean  @default(true)
-  createdAt    DateTime @default(now())
-}
-
-// 1. USER MODEL
+//  USER MODEL
 // Stores core user profile information
+//  USER MODEL
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String?    
-  role          Role      @default(USER)  
+  password      String?
+  role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
-  
-  // Custom: Connect users to their car bookings
-  bookings      Booking[] 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  // RELATIONS (Back-references)
+  cars     Car[] // Added: This user can be a HOST of many cars
+  bookings Booking[] // Already in your code
+  reviews  Review[] // Added: This user can write many reviews
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// 2. ACCOUNT MODEL
+//  ACCOUNT MODEL
 // Links social providers (Google, GitHub) to a specific User
 model Account {
   id                String  @id @default(cuid())
@@ -62,7 +53,7 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-// 3. SESSION MODEL
+//   SESSION MODEL
 // Used for database-based session persistence
 model Session {
   id           String   @id @default(cuid())
@@ -72,7 +63,7 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// 4. VERIFICATION TOKEN
+//  VERIFICATION TOKEN
 // Used for magic links / email verification
 model VerificationToken {
   identifier String
@@ -91,13 +82,71 @@ enum Role {
   HOST
 }
 
-// Example Booking model to get you started
+model Car {
+  id    String @id @default(cuid())
+  name  String
+  brand String // e.g., "Tesla", "Porsche"
+  model String // e.g., "Model 3", "911"
+  year  Int
+  type  String // SUV, Luxury, Sedan
+
+  // Pricing & Value
+  pricePerDay     Int
+  securityDeposit Int @default(0) // Added for host protection
+
+  // Technical Specs
+  seats        Int
+  transmission String // Automatic / Manual
+  fuelType     String // Petrol, Electric, Hybrid
+  engineSize   String? // e.g., "2.0L"
+  horsepower   Int?
+
+  // Media & Info
+  image       String // Primary image
+  images      String[] // Array of additional gallery images
+  description String?  @db.Text
+
+  // Availability & Location
+  isAvailable   Boolean   @default(true)
+  availableFrom DateTime? // Start of availability window
+  availableTo   DateTime? // End of availability window
+  location      String // City name or address
+  lat           Float? // For Map integration
+  lng           Float? // For Map integration
+
+  // Relations
+  hostId   String
+  host     User      @relation(fields: [hostId], references: [id])
+  bookings Booking[]
+  reviews  Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Booking {
+  id         String   @id @default(cuid())
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Int
+  status     String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+
+  carId String
+  car   Car    @relation(fields: [carId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Review {
   id        String   @id @default(cuid())
+  rating    Int // 1 to 5
+  comment   String?
+  carId     String
+  car       Car      @relation(fields: [carId], references: [id])
   userId    String
-  carId     String   // You would link this to a Car model later
-  startDate DateTime
-  endDate   DateTime
-  status    String   @default("PENDING")
   user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

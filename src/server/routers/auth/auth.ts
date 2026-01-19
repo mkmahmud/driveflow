@@ -38,10 +38,11 @@ export const authRouter = router({
         .input(z.object({
             name: z.string().min(2, "Name is too short"),
             email: z.string().email("Invalid email address"),
+            role: z.enum(['USER', 'ADMIN', 'HOST']).optional(),
             password: z.string().min(8, "Password must be at least 8 characters"),
         }))
         .mutation(async ({ input }) => {
-            const { email, password, name } = input;
+            const { email, password, name, role } = input;
 
             // Check if user already exists
             const userExists = await db.user.findUnique({ where: { email } });
@@ -59,6 +60,7 @@ export const authRouter = router({
             const user = await db.user.create({
                 data: {
                     name,
+                    role,
                     email,
                     password: hashedPassword,
                 },
