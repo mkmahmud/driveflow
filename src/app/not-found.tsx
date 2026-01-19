@@ -6,7 +6,7 @@ import { Home, Car, MapPin, ArrowRight } from "lucide-react"
 
 export default function NotFound() {
     return (
-        <Center minH="80vh" w="full" px="4" bg="gray.50">
+        <Center minH="100vh" w="full" px="4" bg="gray.50">
             <VStack gap="10" textAlign="center" maxW="2xl">
                 {/* Animated Car Illustration */}
                 <Box position="relative" w="160px" h="160px">
