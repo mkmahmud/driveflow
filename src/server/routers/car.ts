@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { router, publicProcedure, hostProcedure } from '../trpc';
+import { router, hostProcedure } from '../trpc';
 import { db } from '../db';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -13,11 +13,8 @@ const s3Client = new S3Client({
 });
 
 export const carRouter = router({
-    getAll: publicProcedure.query(async () => {
-        return await db.car.findMany();
-    }),
 
-    // NEW: Get S3 Permission URL
+    //  Get S3 Permission URL
     getUploadUrl: hostProcedure
         .input(z.object({ fileType: z.string(), fileName: z.string() }))
         .mutation(async ({ input }) => {
@@ -34,6 +31,8 @@ export const carRouter = router({
             return { signedUrl, publicUrl };
         }),
 
+
+    // Add a new car
     addCar: hostProcedure.input(
         z.object({
             name: z.string().min(1),
@@ -60,5 +59,67 @@ export const carRouter = router({
         return await db.car.create({
             data: { ...input, hostId },
         });
-    })
+    }),
+
+    // Get My Cars
+
+    getMyCars: hostProcedure.query(async ({ ctx }) => {
+        const hostId = ctx.userId;
+        return await db.car.findMany({
+            where: { hostId },
+        });
+    }),
+
+    // Get Car by ID
+    getCarById: hostProcedure
+        .input(z.object({ carId: z.string().uuid() }))
+        .query(async ({ input, ctx }) => {
+            const hostId = ctx.userId;
+            return await db.car.findFirst({
+                where: { id: input.carId, hostId },
+            });
+        }),
+
+
+    // Update Car
+    updateCar: hostProcedure
+        .input(
+            z.object({
+                carId: z.string().uuid(),
+                name: z.string().min(1).optional(),
+                brand: z.string().min(1).optional(),
+                model: z.string().min(1).optional(),
+                year: z.number().optional(),
+                type: z.string().optional(),
+                pricePerDay: z.number().optional(),
+                securityDeposit: z.number().optional(),
+                seats: z.number().optional(),
+                transmission: z.string().optional(),
+                fuelType: z.string().optional(),
+                engineSize: z.string().optional(),
+                horsepower: z.number().optional(),
+                availableFrom: z.date().nullable().optional(),
+                availableTo: z.date().nullable().optional(),
+                location: z.string().min(1).optional(),
+                description: z.string().optional(),
+                image: z.string().optional(),
+                images: z.array(z.string()).optional(),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const hostId = ctx.userId;
+            const { carId, ...updateData } = input;
+            return await db.car.updateMany({
+                where: { id: carId, hostId },
+                data: { ...updateData },
+            });
+        }),
+
+    deleteCar: hostProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            return await db.car.deleteMany({
+                where: { id: input.id, hostId: ctx.userId }
+            });
+        }),
 });
