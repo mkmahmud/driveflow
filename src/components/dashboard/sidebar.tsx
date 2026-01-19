@@ -116,6 +116,7 @@ export default function Sidebar() {
                         bg: "rgba(13, 148, 136, 0.05)",
                         color: "#0D9488"
                     }}
+                    cursor={"pointer"}
                     transition="all 0.2s"
                 >
                     <HStack gap="3">
@@ -150,7 +151,7 @@ export default function Sidebar() {
                 position="fixed"
                 top="4"
                 left="4"
-                zIndex="1001"
+                zIndex="10001"
             >
                 <IconButton
                     aria-label="Toggle menu"
@@ -235,8 +236,8 @@ export default function Sidebar() {
                 </Box>
 
                 {/* Navigation Links */}
-                <Box flex="1" overflowY="auto" p="4" >
-                    <Stack gap="1">
+                <Box flex="1" overflowY="auto" p="4"  >
+                    <Stack gap="1"  >
                         {filteredLinks.map(link => renderLink(link))}
                     </Stack>
                 </Box>
