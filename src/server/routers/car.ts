@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { router, hostProcedure } from '../trpc';
+import { router, hostProcedure, publicProcedure } from '../trpc';
 import { db } from '../db';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -13,6 +13,50 @@ const s3Client = new S3Client({
 });
 
 export const carRouter = router({
+
+    // Get All Cars
+    getAllCars: publicProcedure
+        .input(
+            z.object({
+                location: z.string(),
+                startDate: z.string(),
+                endDate: z.string(),
+                minPrice: z.number().optional(),
+                maxPrice: z.number().optional(),
+                types: z.array(z.string()).optional(),
+            })
+        )
+        .query(async ({ input }) => {
+            return await db.car.findMany({
+                where: {
+                    // Required: Location match
+                    location: {
+                        contains: input.location,
+                        mode: 'insensitive',
+                    },
+                    // Optional: Price range
+                    pricePerDay: {
+                        gte: input.minPrice ?? 0,
+                        lte: input.maxPrice ?? 2000,
+                    },
+                    // Optional: Type matching
+                    ...(input.types && input.types.length > 0 ? {
+                        type: { in: input.types }
+                    } : {}),
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+        }),
+
+    //get Single Car Details
+    getCarDetails: publicProcedure
+        .input(z.object({ carId: z.string() }))
+        .query(async ({ input }) => {
+            return await db.car.findUnique({
+                where: { id: input.carId },
+            });
+        }),
+
 
     //  Get S3 Permission URL
     getUploadUrl: hostProcedure
@@ -115,6 +159,7 @@ export const carRouter = router({
             });
         }),
 
+    // Delete Car
     deleteCar: hostProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ input, ctx }) => {

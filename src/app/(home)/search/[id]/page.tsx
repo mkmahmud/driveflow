@@ -2,7 +2,7 @@
 
 import {
   Box, Container, Grid, Stack, Text, Heading, HStack,
-  Badge, Image, Separator, Button, Flex, Avatar, SimpleGrid
+  Badge, Image, Separator, Button, Flex, Avatar, SimpleGrid, Skeleton
 } from "@chakra-ui/react"
 import {
   Star, MapPin, Users, Gauge, Fuel, ShieldCheck,
@@ -15,24 +15,44 @@ import { Checkbox } from "@/components/ui/checkbox"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { differenceInDays } from "date-fns"
+import { useParams } from 'next/navigation'
+import { trpc } from "@/trpc/client"
 
 export default function CarDetailsPage() {
+  const params = useParams()
+  const carId = params.id as string
+
+  // --- BACKEND DATA ---
+  const { data: car, isLoading } = trpc.car.getCarDetails.useQuery({
+    carId,
+  });
+
   // --- STATE ---
   const [startDate, setStartDate] = useState<Date | null>(new Date())
-  const [endDate, setEndDate] = useState<Date | null>(new Date(Date.now() + 3 * 86400000)) // +3 days
+  const [endDate, setEndDate] = useState<Date | null>(new Date(Date.now() + 3 * 86400000))
   const [includeTank, setIncludeTank] = useState(false)
   const [includeChildSeat, setIncludeChildSeat] = useState(false)
 
   // --- CALCULATIONS ---
-  const pricePerDay = 320
-  const serviceFee = 25
-
   const stats = useMemo(() => {
+    if (!car) return { days: 1, subtotal: 0, extras: 0, total: 0 }
+
     const days = (startDate && endDate) ? Math.max(1, differenceInDays(endDate, startDate)) : 1
     const extras = (includeTank ? 50 : 0) + (includeChildSeat ? 30 : 0)
-    const subtotal = days * pricePerDay
-    return { days, subtotal, extras, total: subtotal + extras + serviceFee }
-  }, [startDate, endDate, includeTank, includeChildSeat])
+    const serviceFee = 25
+    const subtotal = days * car.pricePerDay
+
+    return {
+      days,
+      subtotal,
+      extras,
+      serviceFee,
+      total: subtotal + extras + serviceFee
+    }
+  }, [startDate, endDate, includeTank, includeChildSeat, car])
+
+  if (isLoading) return <LoadingSkeleton />
+  if (!car) return <Box p="20" textAlign="center">Car not found.</Box>
 
   return (
     <Box bg="gray.50/50" minH="100vh" py="10">
@@ -41,13 +61,17 @@ export default function CarDetailsPage() {
         <Stack gap="2" mb="8">
           <HStack fontSize="xs" color="gray.400" fontWeight="bold" letterSpacing="widest">
             <Text>SEARCH</Text> <ChevronRight size={10} />
-            <Text>SPORTS</Text> <ChevronRight size={10} />
-            <Text color="teal.600">PORSCHE 911</Text>
+            <Text textTransform="uppercase">{car.type}</Text> <ChevronRight size={10} />
+            <Text color="teal.600" textTransform="uppercase">{car.name}</Text>
           </HStack>
-          <Heading size="4xl" fontWeight="900">Porsche 911 Carrera</Heading>
+          <Heading size="4xl" fontWeight="900">{car.name}</Heading>
           <HStack gap="4" color="gray.500" fontSize="sm">
-            <HStack gap="1"><MapPin size={16} className="text-teal-600" /><Text>Manhattan, NY</Text></HStack>
-            <HStack gap="1"><Star size={16} fill="#F59E0B" color="#F59E0B" /><Text fontWeight="bold" color="gray.900">4.9</Text><Text>(128 reviews)</Text></HStack>
+            <HStack gap="1"><MapPin size={16} className="text-teal-600" /><Text>{car.location}</Text></HStack>
+            <HStack gap="1">
+              <Star size={16} fill="#F59E0B" color="#F59E0B" />
+              <Text fontWeight="bold" color="gray.900">4.9</Text>
+              <Text>(Verified Listing)</Text>
+            </HStack>
           </HStack>
         </Stack>
 
@@ -55,27 +79,34 @@ export default function CarDetailsPage() {
 
           {/* LEFT COLUMN */}
           <Stack gap="10">
-            <Box rounded="3xl" overflow="hidden" h="500px" shadow="xl"><Image src="https://wallpapercave.com/wp/wp8517595.jpg" w="full" h="full" objectFit="cover" /></Box>
+            <Box rounded="3xl" overflow="hidden" h="500px"  >
+              <Image src={car.image} alt={car.name} w="full" h="full" objectFit="cover" />
+            </Box>
 
             <SimpleGrid columns={{ base: 2, md: 4 }} gap="4">
-              <FeatureCard icon={Users} title="4 Seats" />
-              <FeatureCard icon={Gauge} title="Auto" />
-              <FeatureCard icon={Fuel} title="Petrol" />
-              <FeatureCard icon={Zap} title="450 HP" />
+              <FeatureCard icon={Users} title={`${car.seats} Seats`} />
+              <FeatureCard icon={Gauge} title={car.transmission} />
+              <FeatureCard icon={Fuel} title={car.fuelType} />
+              <FeatureCard icon={Zap} title={`${car.horsepower} HP`} />
             </SimpleGrid>
 
             <Stack gap="4">
               <Heading size="lg">Description</Heading>
-              <Text color="gray.600" lineHeight="tall" fontSize="lg">The 2023 Porsche 911 Carrera is a masterpiece of German engineering. Experience the raw power of the flat-six engine combined with modern luxury.</Text>
+              <Text color="gray.600" lineHeight="tall" fontSize="lg">
+                {car.description || `Experience the ${car.name}. This ${car.type} vehicle in ${car.location} offers a perfect blend of performance and comfort.`}
+              </Text>
             </Stack>
 
             <Separator />
 
-            {/* Host Information */}
+            {/* Host Information (Assuming car has host relation or hardcoded for now) */}
             <Flex p="6" rounded="3xl" bg="white" border="1px solid" borderColor="gray.100" justify="space-between" align="center">
               <HStack gap="4">
-                <Avatar.Root size="lg"><Avatar.Fallback bg="teal.600" color="white" name="Alex" /></Avatar.Root>
-                <Box><Text fontWeight="bold" fontSize="lg">Alex Johnson</Text><Text fontSize="sm" color="gray.500">Superhost • 240 trips</Text></Box>
+                <Avatar.Root size="lg"><Avatar.Fallback bg="teal.600" color="white" name="Host" /></Avatar.Root>
+                <Box>
+                  <Text fontWeight="bold" fontSize="lg">Vehicle Host</Text>
+                  <Text fontSize="sm" color="gray.500">Professional Host • Identity Verified</Text>
+                </Box>
               </HStack>
               <Button variant="surface" rounded="xl">Contact Host</Button>
             </Flex>
@@ -83,13 +114,13 @@ export default function CarDetailsPage() {
 
           {/* RIGHT COLUMN: BOOKING CARD */}
           <Stack gap="6" position="sticky" top="6">
-            <Box bg="white" p="8" rounded="3xl" border="1px solid" borderColor="teal.50">
+            <Box bg="white" p="8" rounded="3xl" border="1px solid" borderColor="teal.50" shadow="sm">
               <Flex justify="space-between" align="center" mb="8">
                 <HStack align="baseline" gap="1">
-                  <Text fontSize="3xl" fontWeight="900" color="teal.600">${pricePerDay}</Text>
+                  <Text fontSize="3xl" fontWeight="900" color="teal.600">${car.pricePerDay}</Text>
                   <Text fontSize="sm" color="gray.400" fontWeight="bold">/ day</Text>
                 </HStack>
-                <Badge colorPalette="teal">Popular</Badge>
+                <Badge colorPalette="teal">Available</Badge>
               </Flex>
 
               {/* DATE PICKERS */}
@@ -139,7 +170,7 @@ export default function CarDetailsPage() {
               {/* PRICE BREAKDOWN */}
               <Stack gap="3" mb="8">
                 <Flex justify="space-between" fontSize="sm">
-                  <Text color="gray.500">${pricePerDay} x {stats.days} days</Text>
+                  <Text color="gray.500">${car.pricePerDay} x {stats.days} days</Text>
                   <Text fontWeight="bold">${stats.subtotal}</Text>
                 </Flex>
                 {stats.extras > 0 && (
@@ -150,7 +181,7 @@ export default function CarDetailsPage() {
                 )}
                 <Flex justify="space-between" fontSize="sm">
                   <Text color="gray.500">Service Fee</Text>
-                  <Text fontWeight="bold">${serviceFee}</Text>
+                  <Text fontWeight="bold">${stats.serviceFee}</Text>
                 </Flex>
                 <Flex justify="space-between" align="center" pt="4" borderTop="1px dashed" borderColor="gray.200">
                   <Text fontSize="lg" fontWeight="900">Total</Text>
@@ -158,45 +189,75 @@ export default function CarDetailsPage() {
                 </Flex>
               </Stack>
 
-              <Button w="full" size="xl" colorPalette="teal" rounded="2xl" fontWeight="black" py="8" shadow="lg">Book Now</Button>
+              <Button w="full" size="xl" colorPalette="teal" rounded="2xl" fontWeight="black" py="8" shadow="lg">
+                Book Now
+              </Button>
             </Box>
 
             <Box bg="teal.50" p="4" rounded="2xl" border="1px solid" borderColor="teal.100">
-              <HStack gap="3"><ShieldCheck className="text-teal-600" size={20} /><Box><Text fontSize="sm" fontWeight="bold">Verified Secure</Text><Text fontSize="xs">Secure payment & insurance included.</Text></Box></HStack>
+              <HStack gap="3">
+                <ShieldCheck className="text-teal-600" size={20} />
+                <Box>
+                  <Text fontSize="sm" fontWeight="bold">Verified Secure</Text>
+                  <Text fontSize="xs">Secure payment & insurance included.</Text>
+                </Box>
+              </HStack>
             </Box>
           </Stack>
         </Grid>
       </Container>
 
-      {/* CUSTOM CSS FOR DATEPICKER */}
       <style jsx global>{`
-                .date-input-styled {
-                    width: 100%;
-                    padding: 10px 12px;
-                    border: 1px solid #E2E8F0;
-                    border-radius: 12px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    outline: none;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                }
-                .date-input-styled:hover { border-color: #319795; }
-                .date-input-styled:focus { border-color: #319795; box-shadow: 0 0 0 1px #319795; }
-                .react-datepicker { border-radius: 16px !important; border: none !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1) !important; font-family: inherit !important; padding: 10px; }
-                .react-datepicker__header { background: white !important; border-bottom: none !important; }
-                .react-datepicker__day--selected { background-color: #319795 !important; border-radius: 8px !important; }
-                .react-datepicker__day--in-range { background-color: #E6FFFA !important; color: #2C7A7B !important; }
-            `}</style>
+          .date-input-styled {
+              width: 100%;
+              padding: 10px 12px;
+              border: 1px solid #E2E8F0;
+              border-radius: 12px;
+              font-size: 14px;
+              font-weight: 600;
+              outline: none;
+              cursor: pointer;
+              transition: all 0.2s;
+          }
+          .date-input-styled:hover { border-color: #319795; }
+          .date-input-styled:focus { border-color: #319795; box-shadow: 0 0 0 1px #319795; }
+          .react-datepicker { border-radius: 16px !important; border: none !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1) !important; font-family: inherit !important; padding: 10px; }
+          .react-datepicker__header { background: white !important; border-bottom: none !important; }
+          .react-datepicker__day--selected { background-color: #319795 !important; border-radius: 8px !important; }
+          .react-datepicker__day--in-range { background-color: #E6FFFA !important; color: #2C7A7B !important; }
+      `}</style>
     </Box>
   )
 }
 
 function FeatureCard({ icon: Icon, title }: { icon: any, title: string }) {
   return (
-    <Stack align="center" p="5" bg="white" rounded="2xl" border="1px solid" borderColor="gray.100" _hover={{ bg: "teal.50", borderColor: "teal.200" }} cursor="default">
+    <Stack align="center" p="5" bg="white" rounded="2xl" border="1px solid" borderColor="gray.100" _hover={{ bg: "teal.50", borderColor: "teal.200" }} cursor="default" transition="all 0.2s">
       <Box p="3" bg="teal.50" rounded="xl" color="teal.600"><Icon size={24} /></Box>
-      <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase">{title}</Text>
+      <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" textAlign="center">{title}</Text>
     </Stack>
+  )
+}
+
+function LoadingSkeleton() {
+  return (
+    <Container maxW="breakpoint-xl" py="10">
+      <Stack gap="4" mb="8">
+        <Skeleton h="20px" w="200px" />
+        <Skeleton h="40px" w="400px" />
+      </Stack>
+      <Grid templateColumns={{ base: "1fr", lg: "1fr 400px" }} gap="10">
+        <Stack gap="8">
+          <Skeleton h="500px" rounded="3xl" />
+          <SimpleGrid columns={4} gap="4">
+            <Skeleton h="100px" rounded="2xl" />
+            <Skeleton h="100px" rounded="2xl" />
+            <Skeleton h="100px" rounded="2xl" />
+            <Skeleton h="100px" rounded="2xl" />
+          </SimpleGrid>
+        </Stack>
+        <Skeleton h="600px" rounded="3xl" />
+      </Grid>
+    </Container>
   )
 }

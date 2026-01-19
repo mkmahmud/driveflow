@@ -4,7 +4,7 @@ import { trpc } from "@/trpc/client";
 import {
   Box, Button, Container, Flex, Heading, Text,
   SimpleGrid, Badge, Image, Stack, Icon,
-  Float, Circle, Skeleton,
+  Float, Skeleton,
   IconButton,
   Dialog
 } from "@chakra-ui/react"
