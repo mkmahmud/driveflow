@@ -15,14 +15,16 @@ import { Checkbox } from "@/components/ui/checkbox"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { differenceInDays } from "date-fns"
-import { useParams } from 'next/navigation'
+import { useParams , useRouter} from 'next/navigation'
 import { trpc } from "@/trpc/client"
 
 export default function CarDetailsPage() {
   const params = useParams()
   const carId = params.id as string
+  const router = useRouter();
 
   // --- BACKEND DATA ---
+  const { data: user } = trpc.auth.me.useQuery() // Get current user for logging
   const { data: car, isLoading } = trpc.car.getCarDetails.useQuery({
     carId,
   });
@@ -35,7 +37,7 @@ export default function CarDetailsPage() {
 
   // --- CALCULATIONS ---
   const stats = useMemo(() => {
-    if (!car) return { days: 1, subtotal: 0, extras: 0, total: 0 }
+    if (!car) return { days: 1, subtotal: 0, extras: 0, total: 0, serviceFee: 25 }
 
     const days = (startDate && endDate) ? Math.max(1, differenceInDays(endDate, startDate)) : 1
     const extras = (includeTank ? 50 : 0) + (includeChildSeat ? 30 : 0)
@@ -50,6 +52,41 @@ export default function CarDetailsPage() {
       total: subtotal + extras + serviceFee
     }
   }, [startDate, endDate, includeTank, includeChildSeat, car])
+
+  // --- HANDLE BOOKING LOG ---
+  const handleBookNow = () => {
+    if (!car) return;
+
+    const bookingData = {
+      user: { id: user?.id, email: user?.email, name: user?.name },
+      car: {
+        id: car.id,
+        name: car.name,
+        pricePerDay: car.pricePerDay
+      },
+      reservation: {
+        pickupDate: startDate,
+        returnDate: endDate,
+        duration: `${stats.days} days`,
+      },
+      addons: {
+        fullTank: includeTank,
+        childSeat: includeChildSeat
+      },
+      financials: {
+        subtotal: stats.subtotal,
+        extras: stats.extras,
+        serviceFee: stats.serviceFee,
+        totalAmount: stats.total
+      }
+    }
+
+    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+    
+    router.push('/payment');
+    
+    console.log("BOOKING INITIATED:", bookingData); 
+  }
 
   if (isLoading) return <LoadingSkeleton />
   if (!car) return <Box p="20" textAlign="center">Car not found.</Box>
@@ -79,7 +116,7 @@ export default function CarDetailsPage() {
 
           {/* LEFT COLUMN */}
           <Stack gap="10">
-            <Box rounded="3xl" overflow="hidden" h="500px"  >
+            <Box rounded="3xl" overflow="hidden" h="500px">
               <Image src={car.image} alt={car.name} w="full" h="full" objectFit="cover" />
             </Box>
 
@@ -99,7 +136,7 @@ export default function CarDetailsPage() {
 
             <Separator />
 
-            {/* Host Information (Assuming car has host relation or hardcoded for now) */}
+            {/* Host Information */}
             <Flex p="6" rounded="3xl" bg="white" border="1px solid" borderColor="gray.100" justify="space-between" align="center">
               <HStack gap="4">
                 <Avatar.Root size="lg"><Avatar.Fallback bg="teal.600" color="white" name="Host" /></Avatar.Root>
@@ -114,7 +151,7 @@ export default function CarDetailsPage() {
 
           {/* RIGHT COLUMN: BOOKING CARD */}
           <Stack gap="6" position="sticky" top="6">
-            <Box bg="white" p="8" rounded="3xl" border="1px solid" borderColor="teal.50" shadow="sm">
+            <Box bg="white" p="8" rounded="3xl" border="1px solid" borderColor="teal.50">
               <Flex justify="space-between" align="center" mb="8">
                 <HStack align="baseline" gap="1">
                   <Text fontSize="3xl" fontWeight="900" color="teal.600">${car.pricePerDay}</Text>
@@ -158,10 +195,10 @@ export default function CarDetailsPage() {
               <Stack gap="4" mb="8">
                 <Text fontSize="xs" fontWeight="800" color="gray.400" letterSpacing="tighter">EXTRAS</Text>
                 <Checkbox colorPalette="teal" checked={includeTank} onCheckedChange={(e) => setIncludeTank(!!e.checked)}>
-                  <Flex justify="space-between" w="200px" ml="2"><Text fontSize="sm">Full Tank</Text><Text fontSize="sm" fontWeight="bold">+$50</Text></Flex>
+                  <Flex justify="space-between" w="full" ml="2"><Text fontSize="sm">Full Tank</Text><Text fontSize="sm" fontWeight="bold">+$50</Text></Flex>
                 </Checkbox>
                 <Checkbox colorPalette="teal" checked={includeChildSeat} onCheckedChange={(e) => setIncludeChildSeat(!!e.checked)}>
-                  <Flex justify="space-between" w="200px" ml="2"><Text fontSize="sm">Child Seat</Text><Text fontSize="sm" fontWeight="bold">+$30</Text></Flex>
+                  <Flex justify="space-between" w="full" ml="2"><Text fontSize="sm">Child Seat</Text><Text fontSize="sm" fontWeight="bold">+$30</Text></Flex>
                 </Checkbox>
               </Stack>
 
@@ -189,7 +226,10 @@ export default function CarDetailsPage() {
                 </Flex>
               </Stack>
 
-              <Button w="full" size="xl" colorPalette="teal" rounded="2xl" fontWeight="black" py="8" shadow="lg">
+              <Button
+                onClick={handleBookNow}
+                w="full" size="xl" colorPalette="teal" rounded="2xl" fontWeight="black" py="8"
+              >
                 Book Now
               </Button>
             </Box>
