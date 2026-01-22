@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { differenceInDays } from "date-fns"
-import { useParams , useRouter} from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { trpc } from "@/trpc/client"
 
 export default function CarDetailsPage() {
@@ -62,7 +62,8 @@ export default function CarDetailsPage() {
       car: {
         id: car.id,
         name: car.name,
-        pricePerDay: car.pricePerDay
+        pricePerDay: car.pricePerDay,
+        image: car.image
       },
       reservation: {
         pickupDate: startDate,
@@ -82,10 +83,9 @@ export default function CarDetailsPage() {
     }
 
     localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-    
+
     router.push('/payment');
-    
-    console.log("BOOKING INITIATED:", bookingData); 
+
   }
 
   if (isLoading) return <LoadingSkeleton />

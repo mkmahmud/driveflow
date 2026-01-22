@@ -5,26 +5,46 @@ import {
   Box, Container, Stack, Text, Heading, HStack,
   Button, Flex, Input, Icon, Separator, Center, Image, Badge
 } from "@chakra-ui/react"
-import { 
-  CreditCard, ShieldCheck, Lock, ChevronLeft, 
+import {
+  CreditCard, ShieldCheck, Lock, ChevronLeft,
   ExternalLink, Calendar, Car as CarIcon
 } from "lucide-react"
 import { RadioGroup, Radio } from "@/components/ui/radio"
+import { trpc } from "@/trpc/client"
+import { useRouter } from "next/navigation"
 
 export default function PaymentPage() {
   const [method, setMethod] = useState("card")
   const [booking, setBooking] = useState<any>(null)
+
+  const router = useRouter();
+
+  // Stripe Mutation will go here
+  const stripeMutation = trpc.payment.createStripeSession.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        router.push(data.url); // Redirect user to Stripe
+      }
+    },
+  });
 
   // Fetch data from localStorage on mount
   useEffect(() => {
     const savedBooking = localStorage.getItem("pendingBooking")
     if (savedBooking) {
       setBooking(JSON.parse(savedBooking))
+      console.log("Loaded booking from localStorage:", JSON.parse(savedBooking))
     }
   }, [])
 
   const handlePayment = () => {
     console.log(`Initiating ${method} payment for total: $${booking?.financials?.totalAmount}`)
+
+    if (method === "stripe") {
+      stripeMutation.mutate({ bookingData: booking });
+    } else {
+      // Handle Card/PayPal...
+    }
   }
 
   return (
@@ -41,8 +61,8 @@ export default function PaymentPage() {
           </Stack>
 
           {/* Payment Card */}
-          <Box bg="white" p="0" rounded="3xl" border="1px solid" borderColor="gray.100" overflow="hidden" shadow="sm">
-            
+          <Box bg="white" p="0" rounded="3xl" border="1px solid" borderColor="gray.100" overflow="hidden"  >
+
             {/* TOP SUMMARY SECTION */}
             {booking && (
               <Box bg="teal.600" p="6" color="white">
@@ -66,8 +86,8 @@ export default function PaymentPage() {
             )}
 
             <Box p="8">
-                {/* @ts-ignore */}
-              <RadioGroup value={method} onValueChange={(e) => setMethod(e.value )} colorPalette="teal">
+              {/* @ts-ignore */}
+              <RadioGroup value={method} onValueChange={(e) => setMethod(e.value)} colorPalette="teal">
                 <Stack gap="4">
                   <Text fontSize="xs" fontWeight="800" color="gray.400" mb="2">PAYMENT METHOD</Text>
                   <HStack gap="3" mb="6">
@@ -110,8 +130,8 @@ export default function PaymentPage() {
                 </Stack>
               </RadioGroup>
 
-              <Button 
-                mt="10" w="full" size="xl" colorPalette="teal" h="16" rounded="2xl" 
+              <Button
+                mt="10" w="full" size="xl" colorPalette="teal" h="16" rounded="2xl"
                 fontWeight="900" onClick={handlePayment} _active={{ transform: "scale(0.98)" }}
               >
                 Confirm and Pay ${booking?.financials?.totalAmount}
@@ -138,9 +158,9 @@ export default function PaymentPage() {
 
 function PaymentMethodTab({ active, icon: LucideIcon, img, label, value }: any) {
   return (
-    <Radio value={value}  flex="1">
-      <Flex 
-        direction="column" align="center" justify="center" p="4" h="72px" rounded="2xl" border="2px solid" 
+    <Radio value={value} flex="1">
+      <Flex
+        direction="column" align="center" justify="center" p="4" h="72px" rounded="2xl" border="2px solid"
         borderColor={active ? "teal.500" : "gray.100"}
         bg={active ? "teal.50/50" : "white"}
         transition="all 0.2s"

@@ -1,9 +1,9 @@
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { cookies } from 'next/headers';
 import { db } from './db';
 
-//   Create the Context
+// Create the Context
 export const createTRPCContext = async () => {
     const cookieStore = await cookies();
     const userId = cookieStore.get('user-id')?.value;
@@ -19,41 +19,49 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
     transformer: superjson,
 });
 
-
+// Middleware to check if user is logged in
 const isAuthed = t.middleware(({ next, ctx }) => {
-    // @ts-ignore
-    if (!ctx.userId) throw new TRPCError({ code: 'UNAUTHORIZED' });
-    // @ts-ignore
-    return next({ ctx: { userId: ctx.userId } });
+    if (!ctx.userId) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: "You must be logged in" });
+    }
+    return next({
+        ctx: {
+            userId: ctx.userId
+        }
+    });
 });
 
-export const adminProcedure = t.procedure.use(isAuthed).use(async ({ next, ctx }) => {
+/**
+ * Procedures
+ */
+export const router = t.router;
+export const publicProcedure = t.procedure;
+
+// Use this for any action requiring a login (Bookings, Payments, Profile updates)
+export const protectedProcedure = t.procedure.use(isAuthed);
+
+// Admin Only
+export const adminProcedure = protectedProcedure.use(async ({ next, ctx }) => {
     const user = await db.user.findUnique({
         where: { id: ctx.userId },
         select: { role: true }
     });
 
     if (user?.role !== 'ADMIN') {
-        // @ts-ignore
         throw new TRPCError({ code: 'FORBIDDEN', message: "Admin access required" });
     }
-
     return next({ ctx: { user } });
 });
 
-export const hostProcedure = t.procedure.use(isAuthed).use(async ({ next, ctx }) => {
+// Host Only
+export const hostProcedure = protectedProcedure.use(async ({ next, ctx }) => {
     const user = await db.user.findUnique({
         where: { id: ctx.userId },
         select: { role: true }
     });
 
     if (user?.role !== 'HOST') {
-        // @ts-ignore
         throw new TRPCError({ code: 'FORBIDDEN', message: "Host access required" });
     }
-
     return next({ ctx: { user } });
 });
-
-export const router = t.router;
-export const publicProcedure = t.procedure;
