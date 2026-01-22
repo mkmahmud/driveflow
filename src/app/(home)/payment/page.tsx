@@ -14,12 +14,12 @@ import { trpc } from "@/trpc/client"
 import { useRouter } from "next/navigation"
 
 export default function PaymentPage() {
-  const [method, setMethod] = useState("card")
+  const [method, setMethod] = useState("stripe")
   const [booking, setBooking] = useState<any>(null)
 
   const router = useRouter();
 
-  // Stripe Mutation will go here
+  // Stripe Mutation 
   const stripeMutation = trpc.payment.createStripeSession.useMutation({
     onSuccess: (data) => {
       if (data.url) {
@@ -91,10 +91,8 @@ export default function PaymentPage() {
                 <Stack gap="4">
                   <Text fontSize="xs" fontWeight="800" color="gray.400" mb="2">PAYMENT METHOD</Text>
                   <HStack gap="3" mb="6">
-                    <PaymentMethodTab active={method === "card"} value="card" icon={CreditCard} label="Card" />
-                    <PaymentMethodTab active={method === "stripe"} value="stripe" img="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" />
-                    <PaymentMethodTab active={method === "paypal"} value="paypal" img="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" />
-                  </HStack>
+                     <PaymentMethodTab active={method === "stripe"} value="stripe" img="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" />
+                   </HStack>
 
                   <Separator mb="4" />
 

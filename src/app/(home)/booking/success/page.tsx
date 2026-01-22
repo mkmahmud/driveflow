@@ -17,7 +17,7 @@ export default function SuccessPage() {
             localStorage.removeItem("pendingBooking")
             // Redirect to dashboard or bookings list after 3 seconds
             setTimeout(() => {
-                router.push("/bookings") 
+                router.push("/dashboard") 
             }, 3000)
         },
         onError: (err) => {
@@ -50,8 +50,8 @@ export default function SuccessPage() {
                 ) : (
                     <>
                         <Box color="red.500" fontSize="6xl">✘</Box>
-                        <Heading>Something went wrong</Heading>
-                        <Text>{confirm.error?.message || "Failed to save booking to database."}</Text>
+                        <Heading>Please Hold On </Heading>
+                        <Text>Please do not close this window.</Text>
                     </>
                 )}
             </VStack>

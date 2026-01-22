@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export const paymentRouter = router({
+    // Stripe Session Creation
     createStripeSession: protectedProcedure
         .input(z.object({
             bookingData: z.any(),
@@ -62,5 +63,16 @@ export const paymentRouter = router({
                     message: error.message || "Failed to create Stripe session",
                 });
             }
+        }),
+
+    // Get my Payment History
+    getMyPayments: protectedProcedure
+        .query(async ({ ctx }) => {
+            const payments = await ctx.db.payment.findMany({
+                where: { booking: { userId: ctx.userId } },
+                orderBy: { createdAt: 'desc' },
+                include: { booking: { include: { car: true } }, },
+            });
+            return payments;
         }),
 });

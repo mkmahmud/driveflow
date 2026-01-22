@@ -23,6 +23,13 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
         roles: ['USER']
     },
     {
+        id: 'payments',
+        label: 'Payments',
+        href: '/dashboard/user/payments',
+        icon: 'CreditCard',
+        roles: ['USER']
+    },
+    {
         id: 'my-cars',
         label: 'My Cars',
         href: '/dashboard/host/mycars',

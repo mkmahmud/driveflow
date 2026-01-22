@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export const bookingRouter = router({
-    // Existing confirmAndCreate (for Card/PayPal/Direct)
+    // confirm and create 
     confirmAndCreate: protectedProcedure
         .input(z.object({
             carId: z.string(),
@@ -97,6 +97,16 @@ export const bookingRouter = router({
                 });
 
                 return booking;
+            });
+        }),
+
+    // Get My Bookings
+    getMyBookings: protectedProcedure
+        .query(async ({ ctx }) => {
+            return await db.booking.findMany({
+                where: { userId: ctx.userId },
+                orderBy: { createdAt: 'desc' },
+                include: { car: true },
             });
         }),
 });
