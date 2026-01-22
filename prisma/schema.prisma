@@ -125,19 +125,46 @@ model Car {
 }
 
 model Booking {
-  id         String   @id @default(cuid())
-  startDate  DateTime
-  endDate    DateTime
-  totalPrice Int
-  status     String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  id            String   @id @default(cuid())
+  startDate     DateTime
+  endDate       DateTime
+  totalPrice    Int
+  status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  
+  // New Fields for your UI features
+  includeTank      Boolean @default(false)
+  includeChildSeat Boolean @default(false)
+  protectionPlan   String  @default("BASIC") // BASIC, STANDARD, PREMIUM
+  serviceFee       Int     @default(25)
 
-  carId String
-  car   Car    @relation(fields: [carId], references: [id])
-
+  // Relations
+  carId  String
+  car    Car    @relation(fields: [carId], references: [id])
+  
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
+  // Payment Link (One-to-One)
+  payment Payment?
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  amount        Int
+  currency      String   @default("USD")
+  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  method        String   // CARD, STRIPE, PAYPAL
+  transactionId String?  @unique // ID from external provider (Stripe/PayPal)
+
+  // Relation to Booking
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {

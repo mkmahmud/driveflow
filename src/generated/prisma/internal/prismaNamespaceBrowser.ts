@@ -57,6 +57,7 @@ export const ModelName = {
   VerificationToken: 'VerificationToken',
   Car: 'Car',
   Booking: 'Booking',
+  Payment: 'Payment',
   Review: 'Review'
 } as const
 
@@ -165,12 +166,32 @@ export const BookingScalarFieldEnum = {
   endDate: 'endDate',
   totalPrice: 'totalPrice',
   status: 'status',
+  includeTank: 'includeTank',
+  includeChildSeat: 'includeChildSeat',
+  protectionPlan: 'protectionPlan',
+  serviceFee: 'serviceFee',
   carId: 'carId',
   userId: 'userId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  method: 'method',
+  transactionId: 'transactionId',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ReviewScalarFieldEnum = {

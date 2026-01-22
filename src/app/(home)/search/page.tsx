@@ -54,8 +54,7 @@ export default function SearchPage() {
                         h="fit-content"
                         bg="white"
                         p="6"
-                        rounded="2xl"
-                        shadow="sm"
+                        rounded="2xl" 
                     >
                         <Flex align="center" gap="2" mb="2">
                             <SlidersHorizontal size={18} />

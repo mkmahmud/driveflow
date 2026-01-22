@@ -100,7 +100,6 @@ export default function WhyChooseUs() {
                         py="4"
                         rounded="2xl"
                         fontWeight="semibold"
-                        shadow="0 10px 30px rgba(13, 148, 136, 0.2)"
                         border="1px solid"
                         borderColor="rgba(255, 255, 255, 0.1)"
                         backdropFilter="blur(10px)"
@@ -133,10 +132,9 @@ export default function WhyChooseUs() {
                             border="1px solid"
                             borderColor="gray.200"
                             p="6"
-                            rounded="2xl"
-                            shadow="sm"
+                            rounded="2xl" 
                             transition="all 0.3s ease"
-                          
+
                         >
                             <HStack gap="4">
                                 <Center
@@ -181,12 +179,11 @@ export default function WhyChooseUs() {
                             border="1px solid"
                             borderColor="gray.200"
                             p="8"
-                            rounded="3xl"
-                            shadow="sm"
+                            rounded="3xl" 
                             transition="all 0.4s ease"
                             position="relative"
                             overflow="hidden"
-                            
+
                             _before={{
                                 content: '""',
                                 position: 'absolute',
@@ -218,7 +215,7 @@ export default function WhyChooseUs() {
                                 mb="6"
                                 shadow="0 8px 24px rgba(13, 148, 136, 0.2)"
                             >
-                                <feature.icon size={28} color="white" />
+                                <feature.icon size={28} />
                             </Center>
 
                             {/* Content */}
