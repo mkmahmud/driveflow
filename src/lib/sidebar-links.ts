@@ -16,6 +16,13 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
         roles: ['ADMIN', 'USER', 'HOST']
     },
     {
+        id: 'profile',
+        label: 'Profile & KYC',
+        href: '/dashboard/profile',
+        icon: 'User',
+        roles: ['ADMIN', 'USER', 'HOST']
+    },
+    {
         id: 'bookings',
         label: 'My Bookings',
         href: '/dashboard/user/bookings',
