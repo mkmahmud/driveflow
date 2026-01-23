@@ -1,6 +1,9 @@
 "use client";
 
-import { Box, Input, Text } from "@chakra-ui/react";
+import { Box, Input, Text, IconButton } from "@chakra-ui/react";
+import { InputGroup } from "@/components/ui/input-group";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 interface FormInputProps {
     label?: string;
@@ -21,6 +24,11 @@ export function FormInput({
     error,
     onChange,
 }: FormInputProps) {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const isPassword = type === "password";
+    const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
     return (
         <Box w="full">
             {label && (
@@ -29,16 +37,35 @@ export function FormInput({
                 </Text>
             )}
 
-            <Input
-                name={name}
-                value={value}
-                type={type}
-                placeholder={placeholder}
-                onChange={onChange}
-                bg="white"
-                borderColor="gray.300"
-                _focus={{ borderColor: "teal.500" }}
-            />
+            <InputGroup
+                w="full"
+                endElement={
+                    isPassword ? (
+                        <IconButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            color="gray.500"
+                            _hover={{ bg: "transparent", color: "teal.500" }}
+                        >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </IconButton>
+                    ) : null
+                }
+            >
+                <Input
+                    name={name}
+                    value={value}
+                    type={inputType}
+                    placeholder={placeholder}
+                    onChange={onChange}
+                    bg="white"
+                    borderColor={error ? "red.500" : "gray.300"}
+                    _focus={{ borderColor: error ? "red.500" : "teal.500", boxShadow: "none" }}
+                    pe={isPassword ? "10" : "4"}
+                />
+            </InputGroup>
 
             {error && (
                 <Text fontSize="xs" color="red.500" mt="1">

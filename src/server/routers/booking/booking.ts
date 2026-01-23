@@ -4,7 +4,13 @@ import { protectedProcedure, router } from "@/server/trpc";
 import { z } from "zod";
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const getStripe = () => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error("STRIPE_SECRET_KEY is not defined");
+    }
+    return new Stripe(process.env.STRIPE_SECRET_KEY);
+};
 
 export const bookingRouter = router({
     // confirm and create 
@@ -20,6 +26,7 @@ export const bookingRouter = router({
             transactionId: z.string().optional(),
         }))
         .mutation(async ({ input, ctx }) => {
+            const stripe = getStripe(); // Initialized only when called
             return await db.$transaction(async (tx) => {
                 const booking = await tx.booking.create({
                     data: {
@@ -48,18 +55,19 @@ export const bookingRouter = router({
             });
         }),
 
-    // NEW: Finalize Stripe Booking after redirect
+    //   Finalize Stripe Booking after redirect
     finalizeStripeBooking: protectedProcedure
         .input(z.object({ sessionId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            // 1. Retrieve the session
+            const stripe = getStripe();
+            //   Retrieve the session
             const session = await stripe.checkout.sessions.retrieve(input.sessionId);
 
             if (session.payment_status !== 'paid') {
                 throw new Error("Payment not verified");
             }
 
-            // 2. Prevent duplicate bookings
+            // Prevent duplicate bookings
             const existingPayment = await db.payment.findUnique({
                 where: { transactionId: session.id }
             });
@@ -68,7 +76,7 @@ export const bookingRouter = router({
             const meta = session.metadata;
             if (!meta) throw new Error("Missing metadata from Stripe session");
 
-            // 3. ATOMIC TRANSACTION WITH TYPE CASTING
+            //   ATOMIC TRANSACTION WITH TYPE CASTING
             return await db.$transaction(async (tx) => {
                 const booking = await tx.booking.create({
                     data: {

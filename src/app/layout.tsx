@@ -5,6 +5,7 @@ import TRPCProvider from "@/trpc/Provider";
 import { Provider } from "@/components/ui/provider"
 import { AuthProvider } from "@/hooks/useAuth";
 import Script from "next/script";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,7 @@ export default function RootLayout({
             <AuthProvider>
 
               {children}
-
+              <Toaster />
             </AuthProvider>
           </Provider>
         </TRPCProvider>

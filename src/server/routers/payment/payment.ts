@@ -3,8 +3,15 @@ import { router, protectedProcedure } from "@/server/trpc";
 import Stripe from "stripe";
 import { TRPCError } from "@trpc/server";
 
-// Initialize Stripe (Ensure your API version is correct)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const getStripe = () => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error("STRIPE_SECRET_KEY is not defined");
+    }
+    return new Stripe(process.env.STRIPE_SECRET_KEY);
+};
 
 export const paymentRouter = router({
     // Stripe Session Creation
@@ -13,6 +20,8 @@ export const paymentRouter = router({
             bookingData: z.any(),
         }))
         .mutation(async ({ input, ctx }) => {
+
+            const stripe = getStripe();
             try {
                 const { bookingData } = input;
 
