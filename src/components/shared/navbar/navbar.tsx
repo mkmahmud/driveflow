@@ -89,7 +89,7 @@ export default function Navbar() {
                         >
                             DriveFlow
                         </Text>
-                         
+
                     </Box>
                 </NextLink>
             </HStack>
@@ -189,7 +189,6 @@ export default function Navbar() {
                 <DrawerRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
                     <DrawerTrigger asChild>
                         <IconButton
-                            variant="ghost"
                             aria-label="Open Menu"
                             size="lg"
                             borderRadius="lg"
@@ -203,13 +202,14 @@ export default function Navbar() {
                         roundedLeft="3xl"
                         maxW="320px"
                         boxShadow="-20px 0 40px rgba(0, 0, 0, 0.1)"
+                        bg="white"
                     >
                         <DrawerHeader
                             borderBottomWidth="1px"
                             pb="4"
                             bgGradient="linear(to-r, primary.500, teal.400)"
                         >
-                            <DrawerTitle color="white" fontSize="xl">
+                            <DrawerTitle color="black" fontSize="xl">
                                 <HStack>
                                     <Sparkles size={20} />
                                     <Text>DriveFlow Menu</Text>
@@ -219,21 +219,92 @@ export default function Navbar() {
                         <DrawerBody py="6">
                             <VStack align="start" gap="4" mt="4">
                                 <NavLinks />
-                                <Button
-                                    w="full"
-                                    colorPalette="teal"
-                                    variant="solid"
-                                    rounded="xl"
-                                    py="5"
-                                    fontWeight="semibold"
-                                    onClick={() => {
-                                        setOpen(false);
-                                        setIsAuthOpen(true);
-                                    }}
-                                >
-                                    <Sparkles size={16} style={{ marginRight: "8px" }} />
-                                    Sign In
-                                </Button>
+                                {!isLoading && user ? (
+                                    <MenuRoot >
+                                        <Box position="relative">
+                                            <MenuTrigger asChild>
+                                                <HStack
+                                                    cursor="pointer"
+                                                    gap="3"
+                                                    px="3"
+                                                    py="1.5"
+                                                    borderRadius="full"
+                                                    bg="gray.50"
+                                                    _hover={{ bg: "gray.100" }}
+                                                    transition="all 0.2s"
+                                                >
+                                                    <Text fontWeight="semibold" fontSize="sm" color="gray.700">
+                                                        {user.name}
+                                                    </Text>
+                                                    <Avatar.Root
+                                                        size="sm"
+                                                        borderRadius="full"
+                                                        border="2px solid"
+                                                        borderColor="primary.500"
+                                                        boxShadow="0 0 0 2px rgba(0, 168, 168, 0.1)"
+                                                    >
+                                                        <Avatar.Fallback
+                                                            name={user.name || ""}
+                                                            bgGradient="linear(to-br, primary.500, teal.400)"
+                                                            color="white"
+                                                        />
+                                                    </Avatar.Root>
+                                                </HStack>
+                                            </MenuTrigger>
+                                            <MenuContent
+                                                minW="200px"
+                                                boxShadow="0 20px 40px rgba(0, 0, 0, 0.1)"
+                                                borderRadius="xl"
+                                                borderWidth="1px"
+                                                borderColor="gray.200"
+                                                position="absolute"
+                                                left="0"
+                                                top="14"
+                                            >
+                                                <MenuItem
+                                                    value="profile"
+                                                    gap="2"
+                                                    py="3"
+                                                    _hover={{ bg: "primary.50" }}
+                                                >
+                                                    <UserIcon size={16} />
+                                                    <Text fontWeight="medium"> <Link href="/dashboard">Profile</Link> </Text>
+                                                </MenuItem>
+                                                <MenuItem
+                                                    value="logout"
+                                                    color="red.500"
+                                                    gap="2"
+                                                    py="3"
+                                                    _hover={{ bg: "red.50" }}
+                                                    onClick={logout}
+                                                >
+                                                    <LogOut size={16} />
+                                                    <Text fontWeight="medium">Logout</Text>
+                                                </MenuItem>
+                                            </MenuContent>
+                                        </Box>
+                                    </MenuRoot>
+                                ) : (
+                                    <Button
+                                        disabled={isLoading}
+                                        colorPalette="teal"
+                                        variant="solid"
+                                        rounded="full"
+                                        px="6"
+                                        py="5"
+                                        fontWeight="semibold"
+                                        boxShadow="0 4px 15px rgba(0, 168, 168, 0.3)"
+                                        _hover={{
+                                            transform: "translateY(-2px)",
+                                            boxShadow: "0 6px 20px rgba(0, 168, 168, 0.4)"
+                                        }}
+                                        transition="all 0.3s ease"
+                                        onClick={() => setIsAuthOpen(true)}
+                                    >
+                                        <Sparkles size={16} style={{ marginRight: "8px" }} />
+                                        Sign In
+                                    </Button>
+                                )}
                             </VStack>
                         </DrawerBody>
                         <DrawerCloseTrigger

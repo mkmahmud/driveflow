@@ -18,7 +18,7 @@ export const carRouter = router({
     getAllCars: publicProcedure
         .input(
             z.object({
-                location: z.string(),
+                location: z.string().default(""),
                 startDate: z.string(),
                 endDate: z.string(),
                 minPrice: z.number().optional(),
@@ -26,25 +26,61 @@ export const carRouter = router({
                 types: z.array(z.string()).optional(),
             })
         )
-        .query(async ({ input }) => {
-            return await db.car.findMany({
+        .query(async ({ input, ctx }) => {
+            const { location, startDate, endDate, minPrice, maxPrice, types } = input;
+
+            const startReq = new Date(startDate);
+            const endReq = new Date(endDate);
+
+            // partial matches  
+            const searchTerms = location.split(" ").filter((term) => term.length > 0);
+
+            return await ctx.db.car.findMany({
                 where: {
-                    // Required: Location match
-                    location: {
-                        contains: input.location,
-                        mode: 'insensitive',
-                    },
-                    // Optional: Price range
+
+                    OR: [
+                        {
+                            location: {
+                                contains: location,
+                                mode: "insensitive" as const
+                            }
+                        },
+                        ...searchTerms.map((term) => ({
+                            location: {
+                                contains: term,
+                                mode: "insensitive" as const
+                            },
+                        })),
+                    ],
+
+
                     pricePerDay: {
-                        gte: input.minPrice ?? 0,
-                        lte: input.maxPrice ?? 2000,
+                        gte: minPrice ?? 0,
+                        lte: maxPrice ?? 10000,
                     },
-                    // Optional: Type matching
-                    ...(input.types && input.types.length > 0 ? {
-                        type: { in: input.types }
+
+
+                    ...(types && types.length > 0 ? {
+                        type: { in: types }
                     } : {}),
+
+                    bookings: {
+                        none: {
+                            AND: [
+                                { status: { in: ["CONFIRMED", "PENDING"] as const } },
+                                {
+                                    OR: [
+                                        {
+                                            startDate: { lte: endReq },
+                                            endDate: { gte: startReq },
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { createdAt: "desc" },
             });
         }),
 

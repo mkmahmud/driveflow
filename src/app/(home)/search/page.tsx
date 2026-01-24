@@ -21,7 +21,7 @@ export default function SearchPage() {
     const endDate = searchParams.get("endDate") || new Date().toISOString();
 
     // Filter States
-    const [priceRange, setPriceRange] = useState([50, 400])
+    const [priceRange, setPriceRange] = useState([50, 1000])
     const [selectedTypes, setSelectedTypes] = useState<string[]>([])
 
     // REAL DATA QUERY
@@ -133,7 +133,7 @@ export default function SearchPage() {
                                     </Heading>
                                     <HStack mt="2" color="gray.500">
                                         <MapPin size={14} />
-                                        <Text fontSize="sm">{isLoading ? "Searching..." : `${cars?.length || 0} cars available in ${location}`}</Text>
+                                        <Text fontSize="sm">{isLoading ? "Searching..." : `${cars?.length || 0} cars available in`} <b>{location}</b> </Text>
                                     </HStack>
                                 </Box>
 
@@ -178,6 +178,7 @@ export default function SearchPage() {
                                         // @ts-ignore
                                         id={car.id}
                                         name={car.name}
+                                        seats={car.seats}
                                         image={car.image}
                                         price={car.pricePerDay}
                                         type={car.type}

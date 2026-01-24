@@ -23,7 +23,7 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
 
   return (
     <Box
-       
+
       onClick={() => router.push(`/search/${id}`)}
       cursor="pointer"
       position="relative"
@@ -32,9 +32,9 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
       borderWidth="1px"
       borderColor="gray.100"
       transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
-      _hover={{  
+      _hover={{
         transform: "translateY(-8px)",
-        borderColor: "teal.500/30" 
+        borderColor: "teal.500/30"
       }}
     >
       {/* 1. Header Badges */}
@@ -57,7 +57,7 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
           <Sparkles size={12} fill="currentColor" />
           {type}
         </Badge>
-        
+
         <Box
           onClick={(e) => { e.stopPropagation(); setIsFavorite(!isFavorite); }}
           bg="white"
@@ -73,13 +73,12 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
       </Flex>
 
       {/* 2. Visual Content */}
-      <Box pt="12" pb="2" px="6" overflow="hidden">
+      <Box overflow="hidden">
         <Image
           src={image}
           alt={name}
           w="full"
           h="180px"
-          objectFit="contain"
           transition="transform 0.5s ease"
           _groupHover={{ transform: "scale(1.08) translateX(5px)" }}
         />
@@ -104,9 +103,9 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
 
         {/* Technical Specs Row */}
         <SimpleGrid columns={3} gap="2">
-            <SpecItem icon={Users} label={`${seats} Seats`} />
-            <SpecItem icon={Gauge} label={transmission} />
-            <SpecItem icon={Fuel} label={fuelType} />
+          <SpecItem icon={Users} label={`${seats} Seats`} />
+          <SpecItem icon={Gauge} label={transmission} />
+          <SpecItem icon={Fuel} label={fuelType} />
         </SimpleGrid>
 
         <Separator opacity="0.5" />
@@ -123,14 +122,14 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
               </Text>
             </HStack>
           </Box>
-          
+
           <Button
             size="md"
             colorPalette="teal"
             rounded="xl"
             fontWeight="bold"
             px="5"
-             transition="all 0.2s"
+            transition="all 0.2s"
             _groupHover={{ shadow: "lg", transform: "scale(1.02)" }}
           >
             Details
