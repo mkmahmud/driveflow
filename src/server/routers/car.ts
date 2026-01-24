@@ -27,62 +27,66 @@ export const carRouter = router({
             })
         )
         .query(async ({ input, ctx }) => {
-            const { location, startDate, endDate, minPrice, maxPrice, types } = input;
+            const { location, startDate, minPrice, maxPrice, types } = input;
 
+            //   Prepare Request Dates: Start of pick-up day vs End of return day
             const startReq = new Date(startDate);
-            const endReq = new Date(endDate);
+            startReq.setUTCHours(0, 0, 0, 0);
 
-            // partial matches  
-            const searchTerms = location.split(" ").filter((term) => term.length > 0);
+            const endReq = new Date(startDate);
+            endReq.setUTCHours(23, 59, 59, 999);
+
+            const searchTerms = location.trim().split(/\s+/).filter((t) => t.length > 0);
 
             return await ctx.db.car.findMany({
                 where: {
-
-                    OR: [
+                    AND: [
+                        // Location 
                         {
-                            location: {
-                                contains: location,
-                                mode: "insensitive" as const
-                            }
+                            OR: [
+                                { location: { contains: location, mode: "insensitive" as const } },
+                                ...searchTerms.map((term) => ({
+                                    location: { contains: term, mode: "insensitive" as const },
+                                })),
+                            ],
                         },
-                        ...searchTerms.map((term) => ({
-                            location: {
-                                contains: term,
-                                mode: "insensitive" as const
-                            },
-                        })),
-                    ],
 
+                        // DATE  
 
-                    pricePerDay: {
-                        gte: minPrice ?? 0,
-                        lte: maxPrice ?? 10000,
-                    },
+                        { availableFrom: { lte: endReq } },
+                        { availableTo: { gte: startReq } },
 
+                        // Price & Type  
+                        { pricePerDay: { gte: minPrice ?? 0, lte: maxPrice ?? 10000 } },
+                        ...(types && types.length > 0 ? [{ type: { in: types } }] : []),
 
-                    ...(types && types.length > 0 ? {
-                        type: { in: types }
-                    } : {}),
-
-                    bookings: {
-                        none: {
-                            AND: [
-                                { status: { in: ["CONFIRMED", "PENDING"] as const } },
-                                {
-                                    OR: [
+                        // Booking Logic
+                        {
+                            bookings: {
+                                none: {
+                                    AND: [
+                                        { status: { in: ["CONFIRMED", "PENDING"] as const } },
                                         {
-                                            startDate: { lte: endReq },
-                                            endDate: { gte: startReq },
+                                            OR: [
+                                                {
+                                                    startDate: { lte: endReq },
+                                                    endDate: { gte: startReq },
+                                                },
+                                            ],
                                         },
                                     ],
                                 },
-                            ],
+                            },
                         },
-                    },
+                    ],
                 },
                 orderBy: { createdAt: "desc" },
             });
         }),
+
+
+
+
 
     //get Single Car Details
     getCarDetails: publicProcedure
@@ -136,8 +140,29 @@ export const carRouter = router({
         })
     ).mutation(async ({ input, ctx }) => {
         const hostId = ctx.userId;
+
+        // --- DATE   ---
+        let cleanAvailableFrom = input.availableFrom;
+        let cleanAvailableTo = input.availableTo;
+
+        if (cleanAvailableFrom) {
+            cleanAvailableFrom = new Date(cleanAvailableFrom);
+            cleanAvailableFrom.setUTCHours(0, 0, 0, 0);
+        }
+
+        if (cleanAvailableTo) {
+            cleanAvailableTo = new Date(cleanAvailableTo);
+            cleanAvailableTo.setUTCHours(23, 59, 59, 999);
+        }
+
+
         return await db.car.create({
-            data: { ...input, hostId },
+            data: {
+                ...input,
+                hostId,
+                availableFrom: cleanAvailableFrom,
+                availableTo: cleanAvailableTo
+            },
         });
     }),
 

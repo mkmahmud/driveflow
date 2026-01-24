@@ -34,7 +34,7 @@ export const paymentRouter = router({
                 }
 
                 // 2. Create the Session
-                const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://driveflow-alpha.vercel.app";
+                const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
                 const session = await stripe.checkout.sessions.create({
                     payment_method_types: ["card"],
