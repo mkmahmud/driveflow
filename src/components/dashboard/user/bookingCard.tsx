@@ -26,8 +26,8 @@ const statusColorMap = {
     CANCELLED: "red",
 };
 
-const BookingCard = ({ booking }: { booking: any }) => {
-    const statusColor = statusColorMap[booking.status as keyof typeof statusColorMap]  || "gray";
+const BookingCard = ({ booking, onInvoiceClick }: { booking: any, onInvoiceClick: () => void }) => {
+    const statusColor = statusColorMap[booking.status as keyof typeof statusColorMap] || "gray";
 
     return (
         <Box
@@ -35,7 +35,7 @@ const BookingCard = ({ booking }: { booking: any }) => {
             rounded="3xl"
             p="5"
             border="1px solid"
-            borderColor="gray.100" 
+            borderColor="gray.100"
             transition="all 0.2s"
             _hover={{ shadow: "sm", borderColor: "teal.100" }}
         >
@@ -57,7 +57,7 @@ const BookingCard = ({ booking }: { booking: any }) => {
                         w="full"
                         h="full"
                         objectFit="cover"
-                    
+
                     />
                 </Box>
 
@@ -119,6 +119,10 @@ const BookingCard = ({ booking }: { booking: any }) => {
                         size="sm"
                         rounded="xl"
                         gap="2"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent clicking the card itself
+                            onInvoiceClick();
+                        }}
                     >
                         <ReceiptText size={16} />
                         Invoice

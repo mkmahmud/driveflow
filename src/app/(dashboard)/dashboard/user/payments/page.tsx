@@ -16,6 +16,7 @@ import {
     SimpleGrid,
     Center,
     Dialog,
+    Skeleton,
 } from "@chakra-ui/react";
 
 import {
@@ -128,6 +129,27 @@ export default function PaymentDashboard() {
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
+
+                                {isLoading && Array.from({ length: 3 }).map((_, index) => (
+                                    <Table.Row key={index} bg="white" border="none">
+                                        <Table.Cell>
+                                            <Skeleton height="16px" width="80px" borderRadius="md" />
+                                        </Table.Cell>
+
+                                        <Table.Cell>
+                                            <Skeleton height="16px" width="60px" borderRadius="md" />
+                                        </Table.Cell>
+
+                                        <Table.Cell>
+                                            <Skeleton height="20px" width="90px" borderRadius="full" />
+                                        </Table.Cell>
+
+                                        <Table.Cell textAlign="end">
+                                            <Skeleton height="32px" width="90px" borderRadius="md" />
+                                        </Table.Cell>
+                                    </Table.Row>
+                                ))}
+
                             </Table.Body>
                         </Table.Root>
                     </Box>

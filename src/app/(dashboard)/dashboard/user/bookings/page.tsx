@@ -1,6 +1,7 @@
 "use client"
 
 import BookingCard from "@/components/dashboard/user/bookingCard"
+import { BookingInvoiceModal } from "@/components/dashboard/user/bookingInvoiceModal"
 import BookingCardSkeleton from "@/components/skeleton/bookingCardSkeleton"
 import { trpc } from "@/trpc/client"
 import {
@@ -12,18 +13,27 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
- 
- 
+
+
 
 export default function UserBookingsPage() {
     const [filter, setFilter] = useState("ALL")
+
+    const [selectedBooking, setSelectedBooking] = useState<any>(null)
+    const [isInvoiceOpen, setIsInvoiceOpen] = useState(false)
+
+    const handleInvoiceOpen = (booking: any) => {
+        setSelectedBooking(booking)
+        setIsInvoiceOpen(true)
+    }
 
     // Get my bookings 
     const { data: myBookings, isLoading } = trpc.booking.getMyBookings.useQuery();
     console.log(myBookings);
 
     return (
-        <Stack gap="8" w="full">
+        <Stack gap="8" w="full" position="relative" >
+
             {/* Header Area */}
             <Flex justify="space-between" align={{ base: "flex-start", md: "center" }} direction={{ base: "column", md: "row" }} gap="4">
                 <Box>
@@ -47,7 +57,7 @@ export default function UserBookingsPage() {
 
                 {
                     !isLoading && myBookings?.filter((booking) => filter === "ALL" ? true : booking.status === filter).map((booking) => (
-                        <BookingCard key={booking.id} booking={booking} />
+                        <BookingCard key={booking.id} booking={booking} onInvoiceClick={() => handleInvoiceOpen(booking)} />
                     ))
                 }
 
@@ -60,6 +70,13 @@ export default function UserBookingsPage() {
                     </Center>
                 )}
             </Stack>
+            <Box position={"absolute"} w={"full"}>
+                <BookingInvoiceModal
+                    booking={selectedBooking}
+                    open={isInvoiceOpen}
+                    onOpenChange={(e: any) => setIsInvoiceOpen(e.open)}
+                />
+            </Box>
         </Stack>
     )
 }
