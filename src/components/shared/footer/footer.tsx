@@ -109,8 +109,7 @@ export default function Footer() {
                         </Text>
                         <Stack gap="3">
                             {[
-                                { href: "/browse", label: "Browse Cars" },
-                                { href: "/how-it-works", label: "How It Works" },
+                                 { href: "/howItWorks", label: "How It Works" },
                                 { href: "/about", label: "About Us" },
                                 { href: "/careers", label: "Careers" },
                                 { href: "/blog", label: "Blog" }
