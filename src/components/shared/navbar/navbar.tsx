@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/drawer"
 import { LogOut, Menu, UserIcon, Car, Sparkles } from "lucide-react"
 import NextLink from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import AuthModal from "@/components/auth/authModal"
 import { useAuth } from "@/hooks/useAuth"
@@ -23,6 +23,17 @@ export default function Navbar() {
     const [open, setOpen] = useState(false)
     const [isAuthOpen, setIsAuthOpen] = useState(false)
     const { user, logout, isLoading } = useAuth();
+    const [isScrolled, setIsScrolled] = useState(false) // Track scroll state
+
+    // Scroll listener logic
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50)
+        }
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
+
 
     // Nav links
     const NavLinks = () => (
@@ -43,16 +54,19 @@ export default function Navbar() {
             as="nav"
             align="center"
             justify="space-between"
-            py="3"
-            px={{ base: "4", md: "8", lg: "12" }}
-            borderBottomWidth="1px"
+            py={isScrolled ? "0" : "3"}
+             borderBottomWidth="1px"
             borderColor="gray.100"
             bg="white"
             position="sticky"
-            top="0"
+            top={isScrolled ? "20px" : "0"}  
             zIndex="1000"
             backdropFilter="blur(10px)"
             backgroundColor="rgba(255, 255, 255, 0.9)"
+            rounded={isScrolled ? "full" : "none"} // Rounded corners when scrolled
+            mx={isScrolled ? { base: "4", md: "200px" } : "0"} // Margin when minimized 
+            transition="all 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
+
         >
             {/* Logo */}
             <HStack gap="2" asChild cursor="pointer">
