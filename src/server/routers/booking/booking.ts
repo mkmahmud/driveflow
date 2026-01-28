@@ -110,11 +110,59 @@ export const bookingRouter = router({
 
     // Get My Bookings
     getMyBookings: protectedProcedure
+        .input(
+            z.object({
+                limit: z.number().min(1).max(100).default(10),
+                page: z.number().min(1).default(1),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const { limit, page } = input;
+            const skip = (page - 1) * limit;
+
+            // Run both queries in parallel for better performance
+            const [bookings, totalCount] = await Promise.all([
+                ctx.db.booking.findMany({
+                    where: { userId: ctx.userId },
+                    orderBy: { createdAt: 'desc' },
+                    include: { car: true },
+                    take: limit,
+                    skip: skip,
+                }),
+                ctx.db.booking.count({
+                    where: { userId: ctx.userId },
+                }),
+            ]);
+
+            return {
+                bookings,
+                meta: {
+                    totalCount,
+                    totalPages: Math.ceil(totalCount / limit),
+                    currentPage: page,
+                    hasMore: skip + bookings.length < totalCount,
+                },
+            };
+        }),
+
+    // Get my Total Bookings Count
+    getMyTotalBookingsCount: protectedProcedure
         .query(async ({ ctx }) => {
-            return await db.booking.findMany({
+            return await db.booking.count({
                 where: { userId: ctx.userId },
-                orderBy: { createdAt: 'desc' },
-                include: { car: true },
+            });
+        }),
+
+    // Get single Booking Details
+    getBookingDetails: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return await ctx.db.booking.findUnique({
+                where: { id: input.id },
+                include: {
+                    car: true,
+                    payment: true,
+                },
             });
         }),
 });

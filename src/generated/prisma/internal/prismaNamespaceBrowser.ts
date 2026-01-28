@@ -52,12 +52,13 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Account: 'Account',
-  Session: 'Session',
-  VerificationToken: 'VerificationToken',
   Car: 'Car',
   Booking: 'Booking',
   Payment: 'Payment',
+  Incident: 'Incident',
+  Account: 'Account',
+  Session: 'Session',
+  VerificationToken: 'VerificationToken',
   Review: 'Review'
 } as const
 
@@ -85,11 +86,105 @@ export const UserScalarFieldEnum = {
   image: 'image',
   password: 'password',
   role: 'role',
+  phoneNumber: 'phoneNumber',
+  kyc: 'kyc',
+  isKycUploaded: 'isKycUploaded',
+  isIdentityVerified: 'isIdentityVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CarScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  type: 'type',
+  pricePerDay: 'pricePerDay',
+  securityDeposit: 'securityDeposit',
+  seats: 'seats',
+  transmission: 'transmission',
+  fuelType: 'fuelType',
+  engineSize: 'engineSize',
+  horsepower: 'horsepower',
+  image: 'image',
+  images: 'images',
+  description: 'description',
+  currentMileage: 'currentMileage',
+  nextServiceKm: 'nextServiceKm',
+  isAvailable: 'isAvailable',
+  availableFrom: 'availableFrom',
+  availableTo: 'availableTo',
+  location: 'location',
+  lat: 'lat',
+  lng: 'lng',
+  hostId: 'hostId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
+
+
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  totalPrice: 'totalPrice',
+  status: 'status',
+  includeTank: 'includeTank',
+  includeChildSeat: 'includeChildSeat',
+  protectionPlan: 'protectionPlan',
+  serviceFee: 'serviceFee',
+  handoverOtp: 'handoverOtp',
+  pickupPhotos: 'pickupPhotos',
+  returnPhotos: 'returnPhotos',
+  startMileage: 'startMileage',
+  endMileage: 'endMileage',
+  startFuelLevel: 'startFuelLevel',
+  endFuelLevel: 'endFuelLevel',
+  actualPickupTime: 'actualPickupTime',
+  actualReturnTime: 'actualReturnTime',
+  carId: 'carId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  method: 'method',
+  transactionId: 'transactionId',
+  depositReleased: 'depositReleased',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const IncidentScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  description: 'description',
+  images: 'images',
+  status: 'status',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt'
+} as const
+
+export type IncidentScalarFieldEnum = (typeof IncidentScalarFieldEnum)[keyof typeof IncidentScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {
@@ -127,71 +222,6 @@ export const VerificationTokenScalarFieldEnum = {
 } as const
 
 export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
-
-
-export const CarScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  brand: 'brand',
-  model: 'model',
-  year: 'year',
-  type: 'type',
-  pricePerDay: 'pricePerDay',
-  securityDeposit: 'securityDeposit',
-  seats: 'seats',
-  transmission: 'transmission',
-  fuelType: 'fuelType',
-  engineSize: 'engineSize',
-  horsepower: 'horsepower',
-  image: 'image',
-  images: 'images',
-  description: 'description',
-  isAvailable: 'isAvailable',
-  availableFrom: 'availableFrom',
-  availableTo: 'availableTo',
-  location: 'location',
-  lat: 'lat',
-  lng: 'lng',
-  hostId: 'hostId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
-
-
-export const BookingScalarFieldEnum = {
-  id: 'id',
-  startDate: 'startDate',
-  endDate: 'endDate',
-  totalPrice: 'totalPrice',
-  status: 'status',
-  includeTank: 'includeTank',
-  includeChildSeat: 'includeChildSeat',
-  protectionPlan: 'protectionPlan',
-  serviceFee: 'serviceFee',
-  carId: 'carId',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
-
-
-export const PaymentScalarFieldEnum = {
-  id: 'id',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  method: 'method',
-  transactionId: 'transactionId',
-  bookingId: 'bookingId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ReviewScalarFieldEnum = {

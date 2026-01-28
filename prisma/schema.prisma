@@ -1,17 +1,13 @@
 generator client {
   provider = "prisma-client"
-  // This output path is critical for Next.js 15+ compatibility
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  // Note: NO 'url' line here
 }
 
-//  USER MODEL
-// Stores core user profile information
-//  USER MODEL
+// --- USER MODEL ---
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -20,20 +16,150 @@ model User {
   image         String?
   password      String?
   role          Role      @default(USER)
+  
+   
+  phoneNumber         String?
+  
+
+
+  kyc             String[] // Array of strings to store S3 URLs
+  isKycUploaded   Boolean  @default(false)
+  isIdentityVerified Boolean @default(false)
+
   accounts      Account[]
   sessions      Session[]
+  cars          Car[]     
+  bookings      Booking[] 
+  reviews       Review[]  
 
-  // RELATIONS (Back-references)
-  cars     Car[] // Added: This user can be a HOST of many cars
-  bookings Booking[] // Already in your code
-  reviews  Review[] // Added: This user can write many reviews
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
-//  ACCOUNT MODEL
-// Links social providers (Google, GitHub) to a specific User
+// --- APP SPECIFIC ENUMS ---
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  HOST
+}
+
+// --- CAR MODEL ---
+model Car {
+  id              String    @id @default(cuid())
+  name            String
+  brand           String    
+  model           String    
+  year            Int
+  type            String    
+
+  pricePerDay     Int
+  securityDeposit Int       @default(0)
+
+  seats           Int
+  transmission    String    
+  fuelType        String    
+  engineSize      String?   
+  horsepower      Int?
+
+  image           String    
+  images          String[]  
+  description     String?   @db.Text
+
+  // Health Tracking Additions
+  currentMileage  Int       @default(0)
+  nextServiceKm   Int?
+
+  isAvailable     Boolean   @default(true)
+  availableFrom   DateTime? 
+  availableTo     DateTime? 
+  location        String    
+  lat             Float?    
+  lng             Float?    
+
+  hostId          String
+  host            User      @relation(fields: [hostId], references: [id])
+  bookings        Booking[]
+  reviews         Review[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// --- BOOKING MODEL ---
+model Booking {
+  id               String    @id @default(cuid())
+  startDate        DateTime
+  endDate          DateTime
+  totalPrice       Int
+  status           String    @default("PENDING") 
+  
+  includeTank      Boolean   @default(false)
+  includeChildSeat Boolean   @default(false)
+  protectionPlan   String    @default("BASIC") 
+  serviceFee       Int       @default(25)
+
+ 
+  handoverOtp      String?   // For secure key exchange
+  
+  
+  pickupPhotos     String[]  // Photo proof at start
+  returnPhotos     String[]  // Photo proof at end
+  startMileage     Int?
+  endMileage       Int?
+  startFuelLevel   Int?      // 0-100 percentage
+  endFuelLevel     Int?
+
+   
+  actualPickupTime DateTime? 
+  actualReturnTime DateTime?
+
+  carId            String
+  car              Car       @relation(fields: [carId], references: [id])
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  
+  payment          Payment?
+  incidents        Incident[] // New relation for disputes
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// --- PAYMENT MODEL ---
+model Payment {
+  id               String    @id @default(cuid())
+  amount           Int
+  currency         String    @default("USD")
+  status           String    @default("PENDING") 
+  method           String    
+  transactionId    String?   @unique 
+
+  // Security Deposit Tracking
+  depositReleased  Boolean   @default(false)
+
+  bookingId        String    @unique
+  booking          Booking   @relation(fields: [bookingId], references: [id])
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// ---   INCIDENT MODEL ---
+model Incident {
+  id          String   @id @default(cuid())
+  type        String   // ACCIDENT, SCRATCH, LATE_RETURN, CLEANING
+  description String   @db.Text
+  images      String[]
+  status      String   @default("OPEN") // OPEN, RESOLVED
+  
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+// auth
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -49,12 +175,9 @@ model Account {
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
 }
 
-//   SESSION MODEL
-// Used for database-based session persistence
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -63,113 +186,16 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-//  VERIFICATION TOKEN
-// Used for magic links / email verification
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
-}
-
-// --- APP SPECIFIC ENUMS & MODELS ---
-
-enum Role {
-  USER
-  ADMIN
-  SUPER_ADMIN
-  HOST
-}
-
-model Car {
-  id    String @id @default(cuid())
-  name  String
-  brand String // e.g., "Tesla", "Porsche"
-  model String // e.g., "Model 3", "911"
-  year  Int
-  type  String // SUV, Luxury, Sedan
-
-  // Pricing & Value
-  pricePerDay     Int
-  securityDeposit Int @default(0) // Added for host protection
-
-  // Technical Specs
-  seats        Int
-  transmission String // Automatic / Manual
-  fuelType     String // Petrol, Electric, Hybrid
-  engineSize   String? // e.g., "2.0L"
-  horsepower   Int?
-
-  // Media & Info
-  image       String // Primary image
-  images      String[] // Array of additional gallery images
-  description String?  @db.Text
-
-  // Availability & Location
-  isAvailable   Boolean   @default(true)
-  availableFrom DateTime? // Start of availability window
-  availableTo   DateTime? // End of availability window
-  location      String // City name or address
-  lat           Float? // For Map integration
-  lng           Float? // For Map integration
-
-  // Relations
-  hostId   String
-  host     User      @relation(fields: [hostId], references: [id])
-  bookings Booking[]
-  reviews  Review[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Booking {
-  id            String   @id @default(cuid())
-  startDate     DateTime
-  endDate       DateTime
-  totalPrice    Int
-  status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
-  
-  // New Fields for your UI features
-  includeTank      Boolean @default(false)
-  includeChildSeat Boolean @default(false)
-  protectionPlan   String  @default("BASIC") // BASIC, STANDARD, PREMIUM
-  serviceFee       Int     @default(25)
-
-  // Relations
-  carId  String
-  car    Car    @relation(fields: [carId], references: [id])
-  
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Payment Link (One-to-One)
-  payment Payment?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Payment {
-  id            String   @id @default(cuid())
-  amount        Int
-  currency      String   @default("USD")
-  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
-  method        String   // CARD, STRIPE, PAYPAL
-  transactionId String?  @unique // ID from external provider (Stripe/PayPal)
-
-  // Relation to Booking
-  bookingId String  @unique
-  booking   Booking @relation(fields: [bookingId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Review {
   id        String   @id @default(cuid())
-  rating    Int // 1 to 5
+  rating    Int 
   comment   String?
   carId     String
   car       Car      @relation(fields: [carId], references: [id])

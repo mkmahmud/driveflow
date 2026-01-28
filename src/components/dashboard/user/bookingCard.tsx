@@ -12,6 +12,7 @@ import {
     Separator,
 } from "@chakra-ui/react";
 import { Calendar, MapPin, ReceiptText, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const formatDate = (date: any) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -113,20 +114,7 @@ const BookingCard = ({ booking, onInvoiceClick }: { booking: any, onInvoiceClick
                 />
 
                 <Stack direction={{ base: "row", md: "column" }} gap="2">
-                    <Button
-                        variant="ghost"
-                        colorPalette="teal"
-                        size="sm"
-                        rounded="xl"
-                        gap="2"
-                        onClick={(e) => {
-                            e.stopPropagation(); // Prevent clicking the card itself
-                            onInvoiceClick();
-                        }}
-                    >
-                        <ReceiptText size={16} />
-                        Invoice
-                    </Button>
+
 
                     <Button
                         colorPalette="teal"
@@ -135,7 +123,9 @@ const BookingCard = ({ booking, onInvoiceClick }: { booking: any, onInvoiceClick
                         px="6"
                         fontWeight="bold"
                     >
-                        Manage <ChevronRight size={14} />
+                        <Link href={`/dashboard/user/bookings/${booking.id}`} style={{ display: 'flex', alignItems: 'center' }}>
+                            Manage <ChevronRight size={14} />
+                        </Link>
                     </Button>
                 </Stack>
             </Flex>
