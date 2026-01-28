@@ -167,7 +167,6 @@ export const carRouter = router({
     }),
 
     // Get My Cars
-
     getMyCars: hostProcedure.query(async ({ ctx }) => {
         const hostId = ctx.userId;
         return await db.car.findMany({
