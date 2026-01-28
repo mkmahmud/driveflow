@@ -84,4 +84,21 @@ export const paymentRouter = router({
             });
             return payments;
         }),
+
+    // Get my total Payments sum (total money spent)
+    getMyTotalSpent: protectedProcedure
+        .query(async ({ ctx }) => {
+            const result = await ctx.db.payment.aggregate({
+                where: {
+                    booking: { userId: ctx.userId },
+                    status: "COMPLETED"
+                },
+                _sum: {
+                    amount: true,
+                },
+            });
+
+            // Return the sum, or 0 if no payments exist
+            return result._sum.amount || 0;
+        }),
 });
