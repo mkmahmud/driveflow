@@ -185,11 +185,11 @@ export default function PaymentDashboard() {
 
                                     <Flex>
                                         <Box>
-                                            <Image src="/logo.png" alt="Rental Co. Logo" width={50} height={50} />
+                                            <Image src="/logo.png" alt="Drive Flow Logo" width={50} height={50} />
                                         </Box>
                                         <Box>
                                             <Text fontWeight="900" color="teal.600">
-                                                RENTAL CO.
+                                                Drive Flow.
                                             </Text>
                                             <Text fontSize="xs" color="gray.500">
                                                 Dhaka, Bangladesh

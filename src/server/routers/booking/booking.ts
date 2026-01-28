@@ -152,4 +152,17 @@ export const bookingRouter = router({
                 where: { userId: ctx.userId },
             });
         }),
+
+    // Get single Booking Details
+    getBookingDetails: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return await ctx.db.booking.findUnique({
+                where: { id: input.id },
+                include: {
+                    car: true,
+                    payment: true,
+                },
+            });
+        }),
 });

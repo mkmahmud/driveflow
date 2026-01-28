@@ -32,6 +32,8 @@ export type CarAvgAggregateOutputType = {
   securityDeposit: number | null
   seats: number | null
   horsepower: number | null
+  currentMileage: number | null
+  nextServiceKm: number | null
   lat: number | null
   lng: number | null
 }
@@ -42,6 +44,8 @@ export type CarSumAggregateOutputType = {
   securityDeposit: number | null
   seats: number | null
   horsepower: number | null
+  currentMileage: number | null
+  nextServiceKm: number | null
   lat: number | null
   lng: number | null
 }
@@ -62,6 +66,8 @@ export type CarMinAggregateOutputType = {
   horsepower: number | null
   image: string | null
   description: string | null
+  currentMileage: number | null
+  nextServiceKm: number | null
   isAvailable: boolean | null
   availableFrom: Date | null
   availableTo: Date | null
@@ -89,6 +95,8 @@ export type CarMaxAggregateOutputType = {
   horsepower: number | null
   image: string | null
   description: string | null
+  currentMileage: number | null
+  nextServiceKm: number | null
   isAvailable: boolean | null
   availableFrom: Date | null
   availableTo: Date | null
@@ -117,6 +125,8 @@ export type CarCountAggregateOutputType = {
   image: number
   images: number
   description: number
+  currentMileage: number
+  nextServiceKm: number
   isAvailable: number
   availableFrom: number
   availableTo: number
@@ -136,6 +146,8 @@ export type CarAvgAggregateInputType = {
   securityDeposit?: true
   seats?: true
   horsepower?: true
+  currentMileage?: true
+  nextServiceKm?: true
   lat?: true
   lng?: true
 }
@@ -146,6 +158,8 @@ export type CarSumAggregateInputType = {
   securityDeposit?: true
   seats?: true
   horsepower?: true
+  currentMileage?: true
+  nextServiceKm?: true
   lat?: true
   lng?: true
 }
@@ -166,6 +180,8 @@ export type CarMinAggregateInputType = {
   horsepower?: true
   image?: true
   description?: true
+  currentMileage?: true
+  nextServiceKm?: true
   isAvailable?: true
   availableFrom?: true
   availableTo?: true
@@ -193,6 +209,8 @@ export type CarMaxAggregateInputType = {
   horsepower?: true
   image?: true
   description?: true
+  currentMileage?: true
+  nextServiceKm?: true
   isAvailable?: true
   availableFrom?: true
   availableTo?: true
@@ -221,6 +239,8 @@ export type CarCountAggregateInputType = {
   image?: true
   images?: true
   description?: true
+  currentMileage?: true
+  nextServiceKm?: true
   isAvailable?: true
   availableFrom?: true
   availableTo?: true
@@ -336,6 +356,8 @@ export type CarGroupByOutputType = {
   image: string
   images: string[]
   description: string | null
+  currentMileage: number
+  nextServiceKm: number | null
   isAvailable: boolean
   availableFrom: Date | null
   availableTo: Date | null
@@ -387,6 +409,8 @@ export type CarWhereInput = {
   image?: Prisma.StringFilter<"Car"> | string
   images?: Prisma.StringNullableListFilter<"Car">
   description?: Prisma.StringNullableFilter<"Car"> | string | null
+  currentMileage?: Prisma.IntFilter<"Car"> | number
+  nextServiceKm?: Prisma.IntNullableFilter<"Car"> | number | null
   isAvailable?: Prisma.BoolFilter<"Car"> | boolean
   availableFrom?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
   availableTo?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
@@ -418,6 +442,8 @@ export type CarOrderByWithRelationInput = {
   image?: Prisma.SortOrder
   images?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrderInput | Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
   availableFrom?: Prisma.SortOrderInput | Prisma.SortOrder
   availableTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -452,6 +478,8 @@ export type CarWhereUniqueInput = Prisma.AtLeast<{
   image?: Prisma.StringFilter<"Car"> | string
   images?: Prisma.StringNullableListFilter<"Car">
   description?: Prisma.StringNullableFilter<"Car"> | string | null
+  currentMileage?: Prisma.IntFilter<"Car"> | number
+  nextServiceKm?: Prisma.IntNullableFilter<"Car"> | number | null
   isAvailable?: Prisma.BoolFilter<"Car"> | boolean
   availableFrom?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
   availableTo?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
@@ -483,6 +511,8 @@ export type CarOrderByWithAggregationInput = {
   image?: Prisma.SortOrder
   images?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrderInput | Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
   availableFrom?: Prisma.SortOrderInput | Prisma.SortOrder
   availableTo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -519,6 +549,8 @@ export type CarScalarWhereWithAggregatesInput = {
   image?: Prisma.StringWithAggregatesFilter<"Car"> | string
   images?: Prisma.StringNullableListFilter<"Car">
   description?: Prisma.StringNullableWithAggregatesFilter<"Car"> | string | null
+  currentMileage?: Prisma.IntWithAggregatesFilter<"Car"> | number
+  nextServiceKm?: Prisma.IntNullableWithAggregatesFilter<"Car"> | number | null
   isAvailable?: Prisma.BoolWithAggregatesFilter<"Car"> | boolean
   availableFrom?: Prisma.DateTimeNullableWithAggregatesFilter<"Car"> | Date | string | null
   availableTo?: Prisma.DateTimeNullableWithAggregatesFilter<"Car"> | Date | string | null
@@ -547,6 +579,8 @@ export type CarCreateInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -577,6 +611,8 @@ export type CarUncheckedCreateInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -607,6 +643,8 @@ export type CarUpdateInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -637,6 +675,8 @@ export type CarUncheckedUpdateInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -667,6 +707,8 @@ export type CarCreateManyInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -695,6 +737,8 @@ export type CarUpdateManyMutationInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -722,6 +766,8 @@ export type CarUncheckedUpdateManyInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -743,14 +789,6 @@ export type CarOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type StringNullableListFilter<$PrismaModel = never> = {
-  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
-  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
-  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
-  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
-  isEmpty?: boolean
-}
-
 export type CarCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -768,6 +806,8 @@ export type CarCountOrderByAggregateInput = {
   image?: Prisma.SortOrder
   images?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
   availableFrom?: Prisma.SortOrder
   availableTo?: Prisma.SortOrder
@@ -785,6 +825,8 @@ export type CarAvgOrderByAggregateInput = {
   securityDeposit?: Prisma.SortOrder
   seats?: Prisma.SortOrder
   horsepower?: Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrder
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
 }
@@ -805,6 +847,8 @@ export type CarMaxOrderByAggregateInput = {
   horsepower?: Prisma.SortOrder
   image?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
   availableFrom?: Prisma.SortOrder
   availableTo?: Prisma.SortOrder
@@ -832,6 +876,8 @@ export type CarMinOrderByAggregateInput = {
   horsepower?: Prisma.SortOrder
   image?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrder
   isAvailable?: Prisma.SortOrder
   availableFrom?: Prisma.SortOrder
   availableTo?: Prisma.SortOrder
@@ -849,6 +895,8 @@ export type CarSumOrderByAggregateInput = {
   securityDeposit?: Prisma.SortOrder
   seats?: Prisma.SortOrder
   horsepower?: Prisma.SortOrder
+  currentMileage?: Prisma.SortOrder
+  nextServiceKm?: Prisma.SortOrder
   lat?: Prisma.SortOrder
   lng?: Prisma.SortOrder
 }
@@ -912,13 +960,17 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type CarUpdateimagesInput = {
   set?: string[]
   push?: string | string[]
-}
-
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
 }
 
 export type NullableFloatFieldUpdateOperationsInput = {
@@ -974,6 +1026,8 @@ export type CarCreateWithoutHostInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1003,6 +1057,8 @@ export type CarUncheckedCreateWithoutHostInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1061,6 +1117,8 @@ export type CarScalarWhereInput = {
   image?: Prisma.StringFilter<"Car"> | string
   images?: Prisma.StringNullableListFilter<"Car">
   description?: Prisma.StringNullableFilter<"Car"> | string | null
+  currentMileage?: Prisma.IntFilter<"Car"> | number
+  nextServiceKm?: Prisma.IntNullableFilter<"Car"> | number | null
   isAvailable?: Prisma.BoolFilter<"Car"> | boolean
   availableFrom?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
   availableTo?: Prisma.DateTimeNullableFilter<"Car"> | Date | string | null
@@ -1089,6 +1147,8 @@ export type CarCreateWithoutBookingsInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1118,6 +1178,8 @@ export type CarUncheckedCreateWithoutBookingsInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1163,6 +1225,8 @@ export type CarUpdateWithoutBookingsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1192,6 +1256,8 @@ export type CarUncheckedUpdateWithoutBookingsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1221,6 +1287,8 @@ export type CarCreateWithoutReviewsInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1250,6 +1318,8 @@ export type CarUncheckedCreateWithoutReviewsInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1295,6 +1365,8 @@ export type CarUpdateWithoutReviewsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1324,6 +1396,8 @@ export type CarUncheckedUpdateWithoutReviewsInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1353,6 +1427,8 @@ export type CarCreateManyHostInput = {
   image: string
   images?: Prisma.CarCreateimagesInput | string[]
   description?: string | null
+  currentMileage?: number
+  nextServiceKm?: number | null
   isAvailable?: boolean
   availableFrom?: Date | string | null
   availableTo?: Date | string | null
@@ -1380,6 +1456,8 @@ export type CarUpdateWithoutHostInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1409,6 +1487,8 @@ export type CarUncheckedUpdateWithoutHostInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1438,6 +1518,8 @@ export type CarUncheckedUpdateManyWithoutHostInput = {
   image?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.CarUpdateimagesInput | string[]
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
+  nextServiceKm?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   availableFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   availableTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1505,6 +1587,8 @@ export type CarSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   image?: boolean
   images?: boolean
   description?: boolean
+  currentMileage?: boolean
+  nextServiceKm?: boolean
   isAvailable?: boolean
   availableFrom?: boolean
   availableTo?: boolean
@@ -1537,6 +1621,8 @@ export type CarSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   image?: boolean
   images?: boolean
   description?: boolean
+  currentMileage?: boolean
+  nextServiceKm?: boolean
   isAvailable?: boolean
   availableFrom?: boolean
   availableTo?: boolean
@@ -1566,6 +1652,8 @@ export type CarSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   image?: boolean
   images?: boolean
   description?: boolean
+  currentMileage?: boolean
+  nextServiceKm?: boolean
   isAvailable?: boolean
   availableFrom?: boolean
   availableTo?: boolean
@@ -1595,6 +1683,8 @@ export type CarSelectScalar = {
   image?: boolean
   images?: boolean
   description?: boolean
+  currentMileage?: boolean
+  nextServiceKm?: boolean
   isAvailable?: boolean
   availableFrom?: boolean
   availableTo?: boolean
@@ -1606,7 +1696,7 @@ export type CarSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "brand" | "model" | "year" | "type" | "pricePerDay" | "securityDeposit" | "seats" | "transmission" | "fuelType" | "engineSize" | "horsepower" | "image" | "images" | "description" | "isAvailable" | "availableFrom" | "availableTo" | "location" | "lat" | "lng" | "hostId" | "createdAt" | "updatedAt", ExtArgs["result"]["car"]>
+export type CarOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "brand" | "model" | "year" | "type" | "pricePerDay" | "securityDeposit" | "seats" | "transmission" | "fuelType" | "engineSize" | "horsepower" | "image" | "images" | "description" | "currentMileage" | "nextServiceKm" | "isAvailable" | "availableFrom" | "availableTo" | "location" | "lat" | "lng" | "hostId" | "createdAt" | "updatedAt", ExtArgs["result"]["car"]>
 export type CarInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   host?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   bookings?: boolean | Prisma.Car$bookingsArgs<ExtArgs>
@@ -1644,6 +1734,8 @@ export type $CarPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     image: string
     images: string[]
     description: string | null
+    currentMileage: number
+    nextServiceKm: number | null
     isAvailable: boolean
     availableFrom: Date | null
     availableTo: Date | null
@@ -2095,6 +2187,8 @@ export interface CarFieldRefs {
   readonly image: Prisma.FieldRef<"Car", 'String'>
   readonly images: Prisma.FieldRef<"Car", 'String[]'>
   readonly description: Prisma.FieldRef<"Car", 'String'>
+  readonly currentMileage: Prisma.FieldRef<"Car", 'Int'>
+  readonly nextServiceKm: Prisma.FieldRef<"Car", 'Int'>
   readonly isAvailable: Prisma.FieldRef<"Car", 'Boolean'>
   readonly availableFrom: Prisma.FieldRef<"Car", 'DateTime'>
   readonly availableTo: Prisma.FieldRef<"Car", 'DateTime'>
