@@ -17,11 +17,8 @@ const s3Client = new S3Client({
 
 export const userRouter = router({
 
-    //   Get All Users (Admin Only) 
-    getAllUser: adminProcedure.query(async () => {
-        return await db.user.findMany({
-            select: { id: true, name: true, email: true, role: true, createdAt: true }
-        });
+    getAllUser: protectedProcedure.query(async ({ ctx }) => {
+        return await ctx.db.user.findMany();
     }),
 
     // Change Password (User)
@@ -105,18 +102,79 @@ export const userRouter = router({
             return { signedUrl, publicUrl };
         }),
 
-    // 2. Save the final URLs to the User model
+    //  Save the final URLs to the User model
     saveKycUrls: protectedProcedure
         .input(z.object({ urls: z.array(z.string().url()) }))
         .mutation(async ({ input, ctx }) => {
             return await ctx.db.user.update({
                 where: { id: ctx.userId },
                 data: {
-                    kyc: { push: input.urls }, // Appends to your String[] array
+                    kyc: { push: input.urls },
                     isKycUploaded: true,
-                    // keeps status PENDING until an admin reviews
                 },
             });
+        }),
+
+
+    // Get all users Kyc Whats uploded but not verified (Admin)
+    getAllUsersKyc: adminProcedure.query(async ({ ctx }) => {
+        return await ctx.db.user.findMany({
+            where: {
+                isKycUploaded: true,
+                isIdentityVerified: false,
+
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                isKycUploaded: true,
+                isIdentityVerified: true,
+
+                kyc: true,
+            }
+        });
+    }),
+
+    // Get one user (Detail View)
+    getUserDetails: adminProcedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input, ctx }) => {
+            return await ctx.db.user.findUnique({
+                where: { id: input.userId },
+
+            });
+        }),
+
+    // Update KYC Status (Admin)
+    updateKycStatus: adminProcedure
+        .input(z.object({ userId: z.string(), verified: z.boolean() }))
+        .mutation(async ({ input, ctx }) => {
+            return await ctx.db.user.update({
+                where: { id: input.userId },
+                data: { isIdentityVerified: input.verified },
+            });
+        }),
+
+    // Reject Documents (Admin)
+    rejectKycDocuments: adminProcedure
+        .input(z.object({ userId: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            //  Update user
+            await ctx.db.user.update({
+                where: { id: input.userId },
+                data: {
+                    isKycUploaded: false,
+                    isIdentityVerified: false,
+                    kyc: [],
+                },
+            });
+
+            return { success: true, message: "KYC documents rejected and user notified." };
         }),
 
 });

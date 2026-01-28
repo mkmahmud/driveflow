@@ -125,6 +125,13 @@ export const SIDEBAR_LINKS: SidebarLink[] = [
         roles: ['ADMIN']
     },
     {
+        id: 'kyc-reviews',
+        label: 'KYC Reviews',
+        href: '/dashboard/admin/kyc-reviews',
+        icon: 'CreditCard',
+        roles: ['ADMIN']
+    },
+    {
         id: 'reports',
         label: 'Reports',
         href: '/dashboard/admin/reports',
