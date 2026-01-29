@@ -2,6 +2,7 @@
 "use client"
 
 import AdminHome from "@/components/dashboard/admin/home";
+import HostHome from "@/components/dashboard/host/hostHome";
 import UserHome from "@/components/dashboard/user/home";
 import UnderConstruction from "@/components/undercons";
 import { useAuth } from "@/hooks/useAuth"
@@ -21,7 +22,7 @@ export default function DashboardPage() {
             {/* User */}
             {user?.role === "USER" && <UserHome />}
             {/* User */}
-            {user?.role === "HOST" && <UnderConstruction />}
+            {user?.role === "HOST" && <HostHome />}
 
         </Box>
     )
