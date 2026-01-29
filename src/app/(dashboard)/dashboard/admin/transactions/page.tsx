@@ -6,10 +6,11 @@ import {
   Box, Table, Heading, Badge, Text, VStack, HStack,
   Container, Input, Flex, SimpleGrid, IconButton
 } from "@chakra-ui/react";
-import { 
-  ArrowUpRight, ArrowDownLeft, Search, Filter, 
-  Download, CreditCard, Banknote, ChevronRight, X 
+import {
+  ArrowUpRight, ArrowDownLeft, Search, Filter,
+  Download, CreditCard, Banknote, ChevronRight, X
 } from "lucide-react";
+import DataTable from "@/components/dashboard/DataTable";
 
 // Mock Data
 const MOCK_TRANSACTIONS = [
@@ -17,6 +18,8 @@ const MOCK_TRANSACTIONS = [
   { id: "TRX-8842", user: "Sarah Chen", email: "sarah@test.com", amount: "$450.00", date: "Jan 27, 2026", type: "Security Deposit", status: "Held", method: "Apple Pay" },
   { id: "TRX-8710", user: "Marcus Vogt", email: "marcus@company.com", amount: "$2,800.00", date: "Jan 26, 2026", type: "Refund", status: "Processed", method: "Bank Transfer" },
   { id: "TRX-8655", user: "Elena Rossi", email: "elena@web.com", amount: "$150.00", date: "Jan 25, 2026", type: "Extra Mileage", status: "Failed", method: "Mastercard •••• 8812" },
+  { id: "TRX-8656", user: "Elena Rossi", email: "elena@web.com", amount: "$150.00", date: "Jan 25, 2026", type: "Extra Mileage", status: "Failed", method: "Mastercard •••• 8812" },
+  { id: "TRX-8659", user: "Elena Rossi", email: "elena@web.com", amount: "$150.00", date: "Jan 25, 2026", type: "Extra Mileage", status: "Failed", method: "Mastercard •••• 8812" },
 ];
 
 export default function AdminTransactionsPage() {
@@ -44,19 +47,19 @@ export default function AdminTransactionsPage() {
           <Box border="1px solid" borderColor="gray.200" rounded="xl" px={4} py={2} bg="white" minW="300px">
             <HStack gap={2}>
               <Search size={16} className="text-gray-400" />
-              <Input 
-                variant="flushed" 
-                placeholder="Search Transaction ID or User..." 
+              <Input
+                variant="flushed"
+                placeholder="Search Transaction ID or User..."
                 fontSize="sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 _focus={{ outline: "none" }}
               />
               {search && (
-                <IconButton 
-                  aria-label="Clear" 
-                  size="xs" 
-                  variant="ghost" 
+                <IconButton
+                  aria-label="Clear"
+                  size="xs"
+                  variant="ghost"
                   onClick={() => setSearch("")}
                 >
                   <X size={14} />
@@ -75,47 +78,30 @@ export default function AdminTransactionsPage() {
       </SimpleGrid>
 
       {/* Interactive Table */}
-      <Box bg="white" rounded="2xl" border="1px solid" borderColor="gray.200" overflow="hidden">
-        <Table.Root size="lg" variant="line">
-          <Table.Header bg="gray.50"  >
-            <Table.Row>
-              <Table.ColumnHeader fontSize="xs" fontWeight="black"  >ID / DATE</Table.ColumnHeader>
-              <Table.ColumnHeader fontSize="xs" fontWeight="black"  >CUSTOMER</Table.ColumnHeader>
-              <Table.ColumnHeader fontSize="xs" fontWeight="black"  >AMOUNT</Table.ColumnHeader>
-              <Table.ColumnHeader fontSize="xs" fontWeight="black"  >STATUS</Table.ColumnHeader>
-              <Table.ColumnHeader></Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {filteredTransactions.map((trx) => (
-              <Table.Row 
-                key={trx.id} 
-                bg={"white"}
-                _hover={{ bg: "gray.50", cursor: "pointer" }}
-                onClick={() => router.push(`/dashboard/admin/transactions/${trx.id}`)}
-              >
-                <Table.Cell>
-                  <Text fontWeight="bold" fontSize="sm">{trx.id}</Text>
-                  <Text fontSize="2xs" color="gray.400">{trx.date}</Text>
-                </Table.Cell>
-                <Table.Cell>
-                  <Text fontWeight="bold" fontSize="sm">{trx.user}</Text>
-                  <Text fontSize="2xs" color="gray.400">{trx.email}</Text>
-                </Table.Cell>
-                <Table.Cell><Text fontWeight="900" fontSize="sm">{trx.amount}</Text></Table.Cell>
-                <Table.Cell>
-                  <Badge variant="surface" colorPalette={trx.status === "Completed" ? "emerald" : "orange"} rounded="full">
-                    {trx.status}
-                  </Badge>
-                </Table.Cell>
-                <Table.Cell textAlign="end">
-                  <ChevronRight size={18} className="text-gray-300" />
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Box>
+      <DataTable
+        data={filteredTransactions}
+        pageSize={5}
+        onRowClick={(trx) => router.push(`/dashboard/admin/transactions/${trx.id}`)}
+        columns={[
+          {
+            header: "ID / DATE",
+            accessor: "id",
+            sortable: true,
+            render: (val, trx) => (
+              <VStack align="start" gap={0}>
+                <Text fontWeight="bold" fontSize="sm">{trx.id}</Text>
+                <Text fontSize="2xs" color="gray.400">{trx.date}</Text>
+              </VStack>
+            )
+          },
+          { header: "CUSTOMER", accessor: "user", sortable: true },
+          {
+            header: "AMOUNT",
+            accessor: "amount",
+            render: (val) => <Text fontWeight="900">{val}</Text>
+          },
+         ]}
+      />
     </Container>
   );
 }
