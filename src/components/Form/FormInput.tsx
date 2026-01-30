@@ -13,12 +13,14 @@ interface FormInputProps {
     type?: string;
     error?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isDisabled?: boolean;
 }
 
 export function FormInput({
     label,
     name,
     value,
+    isDisabled,
     placeholder,
     type = "text",
     error,
@@ -43,6 +45,7 @@ export function FormInput({
                     isPassword ? (
                         <IconButton
                             variant="ghost"
+                            
                             size="sm"
                             onClick={() => setShowPassword(!showPassword)}
                             aria-label={showPassword ? "Hide password" : "Show password"}
@@ -58,6 +61,7 @@ export function FormInput({
                     name={name}
                     value={value}
                     type={inputType}
+                    disabled={isDisabled}
                     placeholder={placeholder}
                     onChange={onChange}
                     bg="white"

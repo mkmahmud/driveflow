@@ -55,11 +55,11 @@ export default function Navbar() {
             align="center"
             justify="space-between"
             py={isScrolled ? "0" : "3"}
-             borderBottomWidth="1px"
+            borderBottomWidth="1px"
             borderColor="gray.100"
             bg="white"
             position="sticky"
-            top={isScrolled ? "20px" : "0"}  
+            top={isScrolled ? "20px" : "0"}
             zIndex="1000"
             backdropFilter="blur(10px)"
             backgroundColor="rgba(255, 255, 255, 0.9)"
@@ -135,11 +135,19 @@ export default function Navbar() {
                                     borderColor="primary.500"
                                     boxShadow="0 0 0 2px rgba(0, 168, 168, 0.1)"
                                 >
-                                    <Avatar.Fallback
-                                        name={user.name || ""}
-                                        bgGradient="linear(to-br, primary.500, teal.400)"
-                                        color="white"
-                                    />
+                                    {
+                                        user.image ? (
+                                            <Avatar.Image
+                                                src={user.image}
+                                                alt={user.name || "User Profile"}
+                                            />
+                                        ) : (
+                                            <Avatar.Fallback
+                                                name={user.name || ""}
+                                                bgGradient="linear(to-br, primary.500, teal.400)"
+                                                color="white"
+                                            />)
+                                    }
                                 </Avatar.Root>
                             </HStack>
                         </MenuTrigger>

@@ -150,6 +150,45 @@ export const userRouter = router({
             });
         }),
 
+    //  Get S3 Permission URL for Profile Image
+    uploadProfileImage: protectedProcedure
+        .input(z.object({ fileType: z.string(), fileName: z.string() }))
+        .mutation(async ({ input }) => {
+            const key = `profile-images/${Date.now()}-${input.fileName}`;
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET_NAME,
+                Key: key,
+                ContentType: input.fileType,
+            });
+
+            const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+            const publicUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
+            return { signedUrl, publicUrl };
+        }),
+
+
+
+    //   Update User Profile
+    updateUserProfile: protectedProcedure
+        .input(
+            z.object({
+                name: z.string().min(1, "Name is required").max(100, "Name is too long").optional(),
+                phoneNumber: z.string().min(1, "Phone number is required").max(20, "Phone number is too long").optional(),
+                image: z.string().min(1, "Image is required").max(200, "Image is too long").optional(),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            return await ctx.db.user.update({
+                where: { id: ctx.userId },
+                data: {
+                    name: input.name,
+                    phoneNumber: input.phoneNumber,
+                    image: input.image,
+                },
+            });
+        }),
+
     // Update KYC Status (Admin)
     updateKycStatus: adminProcedure
         .input(z.object({ userId: z.string(), verified: z.boolean() }))

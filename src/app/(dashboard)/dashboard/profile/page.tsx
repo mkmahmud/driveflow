@@ -4,6 +4,8 @@ import KycVerificationCard from "@/components/cards/KycVerificationCard";
 import RecentBookingsCard from "@/components/dashboard/user/RecentBookingsCard";
 import { Form } from "@/components/Form/Form";
 import { FormInput } from "@/components/Form/FormInput";
+import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/trpc/client";
 import {
     Box,
     Flex,
@@ -19,15 +21,31 @@ import {
     Heading,
     Stack,
     SimpleGrid,
+    Image,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
 import { CheckCircle, Camera, User } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ProfileCard() {
-    const fileRef = useRef<HTMLInputElement>(null);
-    const [avatar, setAvatar] = useState<string>("");
+    // Get User 
+    const { user } = useAuth();
 
-    const handleUpload = (file: File) => {
+    // format joining Date
+    const joinedDate = user?.createdAt
+        ? format(new Date(user.createdAt), "MMM yyyy")
+        : "N/A";
+
+    // File input ref
+    const fileRef = useRef<HTMLInputElement>(null);
+    const [avatar, setAvatar] = useState<string>(user?.image || "");
+
+    // Get Trpc api
+    const uploadImageMutation = trpc.user.uploadProfileImage.useMutation();
+    const updateMutation = trpc.user.updateUserProfile.useMutation();
+
+    const handleUpload = async (file: File) => {
+
         const reader = new FileReader();
         reader.onloadend = () => {
             if (typeof reader.result === "string") {
@@ -35,30 +53,75 @@ export default function ProfileCard() {
             }
         };
         reader.readAsDataURL(file);
+
+        try {
+
+            const { signedUrl, publicUrl } = await uploadImageMutation.mutateAsync({
+                fileName: file.name,
+                fileType: file.type,
+            });
+
+
+            const uploadRes = await fetch(signedUrl, {
+                method: "PUT",
+                body: file,
+                headers: {
+                    "Content-Type": file.type,
+                },
+            });
+
+            if (!uploadRes.ok) throw new Error("Failed to upload to S3");
+
+
+            await updateMutation.mutateAsync({
+                image: publicUrl,
+            });
+
+            console.log("Profile updated successfully!");
+        } catch (error) {
+            console.error("Error uploading profile image:", error);
+        }
     };
 
     const [form, setForm] = useState({
-        name: "",
-        email: "",
-        avatar: "",
-        phone: "",
+        name: user?.name || "",
+        phoneNumber: user?.phoneNumber || "",
+        email: user?.email || "",
     });
+
+
+    useEffect(() => {
+        try {
+
+            updateMutation.mutate({
+                name: form.name,
+                phoneNumber: form.phoneNumber,
+            });
+            console.log("Profile updated successfully");
+
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
+    }, [form])
+
+
 
     return (
         <Box>
             {/* ================= PROFILE HEADER ================= */}
-            <Box bg="white" rounded="2xl" border="1px solid" borderColor="gray.200" p={6}>
+            <Box bg="white" rounded="2xl" border="1px solid" borderColor="gray.200"  >
                 <Flex
                     gap={6}
                     align={{ base: "start", md: "center" }}
                     direction={{ base: "column", md: "row" }}
                 >
                     {/* AVATAR */}
+
                     <Box position="relative" mx={{ base: "auto", md: "0" }}>
-                        <Avatar.Root size="2xl">
-                            <Avatar.Image src={avatar || undefined} />
-                            <Avatar.Fallback name="Alex Rivers" />
-                        </Avatar.Root>
+
+
+                        <Image src={avatar || "/default-avatar.png"} alt="Profile Avatar" width={120} height={120} style={{ borderRadius: "0% 0% 20% 0%" }} />
+
 
                         <Button
                             size="xs"
@@ -96,39 +159,41 @@ export default function ProfileCard() {
                         <VStack align="start">
                             <HStack wrap="wrap">
                                 <Text fontSize="lg" fontWeight="bold">
-                                    Alex Rivers
+                                    {user?.name || "Unnamed User"}
                                 </Text>
-                                <Badge colorPalette="yellow" rounded="full" px={2} fontSize="xs">
-                                    Verification Pending
-                                </Badge>
+                                {
+                                    user?.isKycUploaded && !user?.isIdentityVerified && (
+                                        <Badge colorPalette="yellow" rounded="full" px={2} fontSize="xs">
+                                            Verification Pending
+                                        </Badge>
+                                    )
+                                }
                             </HStack>
 
                             <Text fontSize="sm" color="gray.500">
-                                Premium Member · Joined Oct 2023
+                                Joined {joinedDate}
                             </Text>
 
                             <HStack mt={2} flexWrap="wrap" gap={3}>
-                                <HStack color="teal.600">
-                                    <Icon as={CheckCircle} boxSize={4} />
-                                    <Text fontSize="xs">Identity Verified</Text>
-                                </HStack>
+                                {
+                                    user?.isIdentityVerified &&
 
-                                <HStack color="gray.400">
-                                    <Icon as={CheckCircle} boxSize={4} />
-                                    <Text fontSize="xs">Phone Verified</Text>
-                                </HStack>
+                                    <HStack color="teal.600">
+                                        <Icon as={CheckCircle} boxSize={4} />
+                                        <Text fontSize="xs">Identity Verified</Text>
+                                    </HStack>
+                                }
+                                {
+                                    user?.phoneNumber &&
+                                    <HStack color="gray.400">
+                                        <Icon as={CheckCircle} boxSize={4} />
+                                        <Text fontSize="xs">Phone Verified</Text>
+                                    </HStack>
+                                }
                             </HStack>
                         </VStack>
 
-                        <Button
-                            size="sm"
-                            rounded="full"
-                            bg="gray.100"
-                            _hover={{ bg: "gray.200" }}
-                            alignSelf={{ base: "flex-start", md: "center" }}
-                        >
-                            Edit Profile
-                        </Button>
+
                     </Flex>
                 </Flex>
             </Box>
@@ -174,29 +239,27 @@ export default function ProfileCard() {
                                         setForm({ ...form, name: e.target.value })
                                     }
                                 />
-
                                 <FormInput
                                     label="Email Address"
                                     name="email"
                                     type="email"
-                                    placeholder="alex@email.com"
+                                    placeholder="alex@example.com"
                                     value={form.email}
-                                    onChange={(e) =>
-                                        setForm({ ...form, email: e.target.value })
-                                    }
+                                    isDisabled={true}
+
                                 />
                             </SimpleGrid>
-
                             <FormInput
                                 label="Phone Number"
-                                name="phone"
+                                name="phoneNumber"
                                 type="tel"
                                 placeholder="(123) 456-7890"
-                                value={form.phone}
+                                value={form.phoneNumber}
                                 onChange={(e) =>
-                                    setForm({ ...form, phone: e.target.value })
+                                    setForm({ ...form, phoneNumber: e.target.value })
                                 }
                             />
+
 
                             <HStack justify="end">
                                 <Button type="submit" colorPalette="teal">

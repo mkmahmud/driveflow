@@ -20,7 +20,7 @@ export const authRouter = router({
         // Fetch user  
         const user = await db.user.findUnique({
             where: { id: userId },
-            select: { id: true, email: true, name: true, role: true }
+            select: { id: true, email: true, name: true, role: true, image: true, isKycUploaded: true, isIdentityVerified: true, createdAt: true, phoneNumber: true },
         });
 
         return user;
