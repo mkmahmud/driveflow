@@ -8,6 +8,11 @@ interface User {
     email: string
     name: string | null
     role: 'ADMIN' | 'USER' | 'HOST'
+    image: string | null
+    isKycUploaded: boolean
+    isIdentityVerified: boolean
+    createdAt: string
+    phoneNumber: string | null
 }
 
 interface AuthContextType {

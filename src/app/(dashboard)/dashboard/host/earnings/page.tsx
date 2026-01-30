@@ -1,163 +1,135 @@
-"use client"
+"use client";
 
-import {
-  Box, Flex, Stack, HStack, Text, Heading, SimpleGrid,
-  Icon, Badge, Table, Button, Card, Separator, Progress
-} from "@chakra-ui/react"
-import {
-  DollarSign, Car, CalendarCheck, TrendingUp,
-  ArrowUpRight, Download, MoreHorizontal
-} from "lucide-react"
+import { Heading, Text, VStack, HStack, Box, SimpleGrid, Badge, Button, Flex, Separator, Center, Grid } from "@chakra-ui/react";
+import { 
+  Wallet, ArrowUpRight, ArrowDownRight, 
+  Download, Calendar, Landmark, Info 
+} from "lucide-react";
 
-export default function Earnings() {
+export default function HostEarningsPage() {
   return (
-    <Box p={{ base: "4", md: "8" }} bg="gray.50" minH="100vh">
-      {/* Header Section */}
-      <Flex justify="space-between" align="center" mb="8">
-        <Stack gap="1">
-          <Heading size="xl" fontWeight="900" letterSpacing="-0.03em">
-            Earnings Overview
-          </Heading>
-          <Text color="gray.500" fontWeight="medium">
-            Monitor your fleet performance and payouts.
-          </Text>
-        </Stack>
-        <Button colorPalette="teal" size="md" rounded="xl"  >
-          Export Report
-        </Button>
+    <Box maxW="1200px" mx="auto" py={8}>
+      {/* Header */}
+      <Flex justify="space-between" align="center" mb={10}>
+        <VStack align="start" gap={0}>
+          <Text fontSize="xs" fontWeight="black" color="emerald.600" letterSpacing="0.2em">FINANCE</Text>
+          <Heading size="2xl" fontWeight="900" letterSpacing="-0.02em">Earnings</Heading>
+        </VStack>
+        <HStack gap={3}>
+          {/* @ts-ignore */}
+           <Button variant="outline" borderColor="gray.200" rounded="xl" leftIcon={<Download size={16}/>}>Export Tax Form</Button>
+           <Button bg="black" color="white" rounded="xl" px={6}>Withdraw Funds</Button>
+        </HStack>
       </Flex>
 
-      {/* Stats Grid */}
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap="6" mb="8">
-        <StatCard
-          label="Total Earnings"
-          value="$12,850.00"
-          change="+12.5%"
-          icon={DollarSign}
-          color="teal"
-        />
-        <StatCard
-          label="Active Fleet"
-          value="8 Cars"
-          change="All available"
-          icon={Car}
-          color="blue"
-        />
-        <StatCard
-          label="Bookings"
-          value="142"
-          change="+18 last month"
-          icon={CalendarCheck}
-          color="purple"
-        />
-        <StatCard
-          label="Avg. Rating"
-          value="4.9"
-          change="Top Rated Host"
-          icon={TrendingUp}
-          color="orange"
-        />
-      </SimpleGrid>
-
-      {/* Main Content: Performance by Car & Recent Activity */}
-      <SimpleGrid columns={{ base: 1, xl: 3 }} gap="8">
-
-        {/* Earnings by Vehicle Table */}
-        <Box   bg="white" rounded="3xl" shadow="sm" borderWidth="1px" p="6"  >
-          <Heading size="md" mb="6">Performance by Vehicle</Heading>
-          <Table.Root variant="line" size="sm">
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeader>Vehicle</Table.ColumnHeader>
-                <Table.ColumnHeader>Bookings</Table.ColumnHeader>
-                <Table.ColumnHeader>Utilization</Table.ColumnHeader>
-                <Table.ColumnHeader textAlign="right">Revenue</Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              <CarRow name="Tesla Model 3" bookings={42} revenue="$4,200" util={85} />
-              <CarRow name="Porsche 911" bookings={12} revenue="$5,800" util={40} />
-              <CarRow name="BMW X5" bookings={28} revenue="$2,850" util={72} />
-            </Table.Body>
-          </Table.Root>
+      {/* Financial Summary Grid */}
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={5} mb={10}>
+        <Box border="1px solid" borderColor="gray.200" p={6} rounded="2xl" bg="white">
+          <Text fontSize="2xs" fontWeight="black" color="gray.400" mb={2}>AVAILABLE FOR WITHDRAWAL</Text>
+          <Heading size="2xl" fontWeight="900">$2,840.50</Heading>
+          <HStack mt={4} color="emerald.600">
+            <Landmark size={14} />
+            <Text fontSize="xs" fontWeight="bold">Linked to Chase ****4210</Text>
+          </HStack>
         </Box>
 
-        {/* Payout Summary Card */}
-        <Card.Root bg="gray.900" color="white" rounded="3xl" p="6" shadow="xl">
-          <Stack gap="6">
-            <Box>
-              <Text color="gray.400" fontSize="sm" fontWeight="bold">AVAILABLE FOR WITHDRAWAL</Text>
-              <Heading size="2xl" mt="2">$3,420.50</Heading>
-            </Box>
+        <Box border="1px solid" borderColor="gray.200" p={6} rounded="2xl" bg="white">
+          <Text fontSize="2xs" fontWeight="black" color="gray.400" mb={2}>PENDING (ESCROW)</Text>
+          <Heading size="2xl" fontWeight="900" color="gray.400">$1,120.00</Heading>
+          <HStack mt={4} color="orange.500">
+            <Calendar size={14} />
+            <Text fontSize="xs" fontWeight="bold">Releasing in 3-5 days</Text>
+          </HStack>
+        </Box>
 
-            <Separator opacity="0.2" />
-
-            <Stack gap="4">
-              <Flex justify="space-between">
-                <Text color="gray.400">Next Payout</Text>
-                <Text fontWeight="bold">Jan 28, 2026</Text>
-              </Flex>
-              <Progress.Root value={70} colorPalette="teal" size="sm" rounded="full">
-                <Progress.Track bg="white/10">
-                  <Progress.Range />
-                </Progress.Track>
-              </Progress.Root>
-              <Text fontSize="xs" color="gray.500">
-                You've reached 70% of your monthly goal ($5,000)
-              </Text>
-            </Stack>
-
-            <Button w="full" bg="white" color="gray.900" rounded="2xl" fontWeight="bold" h="12" _hover={{ bg: "teal.50" }}>
-              Withdraw Funds
-            </Button>
-          </Stack>
-        </Card.Root>
-
+        <Box border="1px solid" borderColor="gray.200" p={6} rounded="2xl" bg="gray.900" color="white">
+          <Text fontSize="2xs" fontWeight="black" color="whiteAlpha.600" mb={2}>LIFETIME REVENUE</Text>
+          <Heading size="2xl" fontWeight="900">$48,920.00</Heading>
+          <HStack mt={4} color="emerald.400">
+            <ArrowUpRight size={14} />
+            <Text fontSize="xs" fontWeight="bold">+15% from last year</Text>
+          </HStack>
+        </Box>
       </SimpleGrid>
+
+      {/* Earnings Breakdown & History */}
+      <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={8}>
+        
+        {/* Payout History Ledger */}
+        <Box border="1px solid" borderColor="gray.200" rounded="2xl" overflow="hidden">
+          <Box p={5} borderBottom="1px solid" borderColor="gray.100" bg="gray.50/50">
+            <Heading size="sm" fontWeight="900">Payout History</Heading>
+          </Box>
+          <VStack align="stretch" gap={0}>
+            <PayoutRow date="Jan 24, 2026" amount="$1,420.00" status="Completed" method="Direct Deposit" />
+            <PayoutRow date="Jan 17, 2026" amount="$980.50" status="Completed" method="Direct Deposit" />
+            <PayoutRow date="Jan 10, 2026" amount="$2,100.00" status="Completed" method="Direct Deposit" />
+            <PayoutRow date="Jan 03, 2026" amount="$1,150.00" status="Completed" method="Direct Deposit" isLast />
+          </VStack>
+        </Box>
+
+        {/* Revenue Insights Sidebar */}
+        <VStack gap={6} align="stretch">
+          <Box border="1px solid" borderColor="gray.200" p={6} rounded="2xl">
+            <Heading size="sm" fontWeight="900" mb={4}>Fee Breakdown</Heading>
+            <Text fontSize="xs" color="gray.500" mb={6}>Based on your Pro-Host tier (20% platform fee).</Text>
+            
+            <VStack align="stretch" gap={4}>
+               <FeeItem label="Booking Subtotal" value="$1,200.00" />
+               <FeeItem label="Platform Fee (20%)" value="-$240.00" isNegative />
+               <FeeItem label="Insurance Protection" value="-$60.00" isNegative />
+               <Separator />
+               <HStack justify="space-between" pt={2}>
+                  <Text fontWeight="black" fontSize="sm">Your Net Take</Text>
+                  <Text fontWeight="black" fontSize="md" color="emerald.600">$900.00</Text>
+               </HStack>
+            </VStack>
+          </Box>
+
+          <Box border="1px solid" borderColor="blue.100" bg="blue.50/30" p={5} rounded="2xl">
+             <HStack mb={2}>
+                <Info size={16} className="text-blue-600" />
+                <Text fontSize="xs" fontWeight="black" color="blue.800">TAX INFORMATION</Text>
+             </HStack>
+             <Text fontSize="xs" color="blue.700">Your 2025 1099-K form is now ready for download in the documents portal.</Text>
+          </Box>
+        </VStack>
+
+      </Grid>
     </Box>
-  )
+  );
 }
 
+// --- Internal Components ---
 
-function StatCard({ label, value, change, icon: IconBtn, color }: any) {
+function PayoutRow({ date, amount, status, method, isLast }: any) {
   return (
-    <Box bg="white" p="6" rounded="3xl" shadow="sm" borderWidth="1px" position="relative" overflow="hidden">
-      <HStack justify="space-between" mb="4">
-        <Box p="2" bg={`${color}.50`} rounded="xl" color={`${color}.600`}>
-          <IconBtn size={20} />
-        </Box>
-        <Badge variant="subtle" colorPalette={color === "orange" ? "orange" : "teal"} rounded="full">
-          {change}
+    <Box p={5} borderBottom={isLast ? "none" : "1px solid"} borderColor="gray.100" _hover={{ bg: "gray.50" }}>
+      <HStack justify="space-between">
+        <HStack gap={4}>
+          <Center boxSize="40px" border="1px solid" borderColor="gray.200" rounded="xl" bg="white">
+            <ArrowDownRight size={18} className="text-emerald-600" />
+          </Center>
+          <VStack align="start" gap={0}>
+            <Text fontSize="sm" fontWeight="900">{amount}</Text>
+            <Text fontSize="xs" color="gray.500">{date} • {method}</Text>
+          </VStack>
+        </HStack>
+        <Badge colorPalette="emerald" variant="surface" rounded="md" fontSize="2xs" px={2}>
+          {status}
         </Badge>
       </HStack>
-      <Stack gap="0">
-        <Text color="gray.500" fontSize="sm" fontWeight="bold">{label}</Text>
-        <Heading size="lg" fontWeight="900" color="gray.800">{value}</Heading>
-      </Stack>
     </Box>
-  )
+  );
 }
 
-function CarRow({ name, bookings, revenue, util }: any) {
+function FeeItem({ label, value, isNegative }: any) {
   return (
-    <Table.Row _hover={{ bg: "gray.50" }} transition="bg 0.2s">
-      <Table.Cell py="4">
-        <Text fontWeight="bold" color="gray.800">{name}</Text>
-      </Table.Cell>
-      <Table.Cell>
-        <Badge variant="outline" rounded="md">{bookings} trips</Badge>
-      </Table.Cell>
-      <Table.Cell>
-        <HStack gap="3">
-          <Progress.Root value={util} w="60px" colorPalette="teal" size="xs">
-            <Progress.Track><Progress.Range /></Progress.Track>
-          </Progress.Root>
-          <Text fontSize="xs" fontWeight="bold">{util}%</Text>
-        </HStack>
-      </Table.Cell>
-      <Table.Cell textAlign="right">
-        <Text fontWeight="900" color="teal.600">{revenue}</Text>
-      </Table.Cell>
-    </Table.Row>
-  )
+    <HStack justify="space-between">
+      <Text fontSize="xs" fontWeight="bold" color="gray.500">{label}</Text>
+      <Text fontSize="xs" fontWeight="black" color={isNegative ? "red.500" : "gray.900"}>
+        {value}
+      </Text>
+    </HStack>
+  );
 }

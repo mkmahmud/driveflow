@@ -1,8 +1,8 @@
 "use client"
 
-import { 
-  Box, Text, HStack, IconButton, BreadcrumbRoot, BreadcrumbItem, 
-  BreadcrumbLink, BreadcrumbSeparator, Flex, Avatar, Badge 
+import {
+  Box, Text, HStack, IconButton, BreadcrumbRoot, BreadcrumbItem,
+  BreadcrumbLink, BreadcrumbSeparator, Flex, Avatar, Badge
 } from "@chakra-ui/react"
 import { Home, Bell, HelpCircle, Menu } from "lucide-react"
 import { usePathname } from "next/navigation"
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth"
 export default function DashboardHeader() {
   const pathname = usePathname()
   const { user } = useAuth()
+
 
   const getBreadcrumbs = () => {
     const segments = pathname.split('/').filter(segment => segment)
@@ -117,9 +118,18 @@ export default function DashboardHeader() {
         {/* User Profile */}
         <Flex align="center" gap="3">
           <Avatar.Root size="sm" bg="#0D9488" color="white" border="2px solid white" shadow="sm">
-            <Avatar.Fallback name={user?.name || "U"} />
+            {
+              user?.image ? (
+                <Avatar.Image
+                  src={user.image}
+                  alt={user.name || "User Avatar"}
+                />
+              ) : (
+                <Avatar.Fallback name={user?.name || "U"} />
+              )
+            }
           </Avatar.Root>
-          
+
           {/* Hide name and email on small mobile devices */}
           <Box display={{ base: "none", lg: "block" }}>
             <Text fontSize="sm" fontWeight="bold" color="#1E293B" lineHeight="1">
@@ -135,9 +145,7 @@ export default function DashboardHeader() {
               >
                 {user?.role}
               </Badge>
-              <Text fontSize="10px" color="#64748B" maxW="120px" truncate>
-                {user?.email}
-              </Text>
+             
             </Flex>
           </Box>
         </Flex>
