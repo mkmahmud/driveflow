@@ -1,13 +1,6 @@
-import {
-    Box,
-    Flex,
-    Stack,
-    Skeleton,
-    SkeletonText,
-    HStack,
-    SimpleGrid,
-    Separator,
-} from "@chakra-ui/react";
+"use client";
+
+import { Box, Flex, Stack, SimpleGrid, Skeleton, SkeletonCircle, HStack } from "@chakra-ui/react";
 
 const BookingCardSkeleton = () => {
     return (
@@ -17,55 +10,58 @@ const BookingCardSkeleton = () => {
             p="5"
             border="1px solid"
             borderColor="gray.100"
-            shadow="sm"
         >
             <Flex
                 direction={{ base: "column", md: "row" }}
                 gap="6"
                 align={{ base: "stretch", md: "center" }}
             >
-                {/* Image Skeleton */}
-                <Skeleton
+                {/* 1. Car Image Skeleton */}
+                <Box
                     w={{ base: "full", md: "200px" }}
                     h="120px"
                     rounded="2xl"
-                />
+                    overflow="hidden"
+                >
+                    <Skeleton w="full" h="full" />
+                </Box>
 
-                {/* Details Skeleton */}
+                {/* 2. Details Skeleton */}
                 <Stack flex="1" gap="3">
                     <Flex justify="space-between" align="center">
                         <HStack gap="2">
+                            {/* Status Badge */}
                             <Skeleton h="20px" w="80px" rounded="full" />
+                            {/* Booking ID */}
                             <Skeleton h="12px" w="60px" />
                         </HStack>
-                        <Skeleton h="24px" w="70px" />
+
+                        {/* Price Tag */}
+                        <Skeleton h="28px" w="70px" />
                     </Flex>
 
-                    <Skeleton h="22px" w="60%" />
+                    {/* Car Name Title */}
+                    <Skeleton h="24px" w="40%" />
 
                     <SimpleGrid columns={{ base: 1, sm: 2 }} gap="4">
+                        {/* Calendar Info */}
                         <HStack>
-                            <Skeleton h="14px" w="14px" rounded="full" />
-                            <Skeleton h="12px" w="140px" />
+                            <SkeletonCircle size="14px" />
+                            <Skeleton h="12px" w="120px" />
                         </HStack>
+
+                        {/* Location Info */}
                         <HStack>
-                            <Skeleton h="14px" w="14px" rounded="full" />
+                            <SkeletonCircle size="14px" />
                             <Skeleton h="12px" w="100px" />
                         </HStack>
                     </SimpleGrid>
                 </Stack>
 
-                {/* Actions Separator */}
-                <Separator
-                    orientation="vertical"
-                    h="80px"
-                    display={{ base: "none", md: "block" }}
-                />
-
-                {/* Actions Skeleton */}
-                <Stack direction={{ base: "row", md: "column" }} gap="2">
-                    <Skeleton h="32px" w="90px" rounded="xl" />
-                    <Skeleton h="32px" w="110px" rounded="xl" />
+                {/* 3. Actions Skeleton */}
+                <Stack direction={{ base: "row", md: "column" }} gap="2" align="center">
+                     {/* Manage Button */}
+                    <Skeleton h="36px" w={{ base: "full", md: "110px" }} rounded="xl" />
                 </Stack>
             </Flex>
         </Box>

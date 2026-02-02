@@ -213,8 +213,7 @@ export default function WhyChooseUs() {
                                 bgGradient={feature.gradient}
                                 rounded="2xl"
                                 mb="6"
-                                shadow="0 8px 24px rgba(13, 148, 136, 0.2)"
-                            >
+                             >
                                 <feature.icon size={28} />
                             </Center>
 
