@@ -11,6 +11,7 @@ import { useState } from "react"
 import { CarCard } from "@/components/cards/carCard"
 import { trpc } from "@/trpc/client"
 import { useSearchParams } from "next/navigation"
+import { CarCardSkeleton } from "@/components/skeleton/carCardSkeleton"
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
@@ -54,7 +55,7 @@ export default function SearchPage() {
                         h="fit-content"
                         bg="white"
                         p="6"
-                        rounded="2xl" 
+                        rounded="2xl"
                     >
                         <Flex align="center" gap="2" mb="2">
                             <SlidersHorizontal size={18} />
@@ -170,7 +171,13 @@ export default function SearchPage() {
                         {/* Grid of Real Cars */}
                         <SimpleGrid columns={{ base: 1, md: 2 }} gap="8">
                             {isLoading ? (
-                                [1, 2, 3, 4].map(i => <Skeleton key={i} h="400px" rounded="3xl" />)
+                                [1, 2, 3, 4].map(i => <Box
+                                    key={i}
+                                    minW={{ base: "280px", sm: "320px", md: "360px", lg: "380px" }}
+                                    flexShrink={0}
+                                >
+                                    <CarCardSkeleton />
+                                </Box>)
                             ) : cars && cars.length > 0 ? (
                                 cars.map(car => (
                                     <CarCard

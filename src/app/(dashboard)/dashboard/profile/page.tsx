@@ -4,6 +4,7 @@ import KycVerificationCard from "@/components/cards/KycVerificationCard";
 import RecentBookingsCard from "@/components/dashboard/user/RecentBookingsCard";
 import { Form } from "@/components/Form/Form";
 import { FormInput } from "@/components/Form/FormInput";
+import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/hooks/useAuth";
 import { trpc } from "@/trpc/client";
 import {
@@ -76,6 +77,15 @@ export default function ProfileCard() {
             await updateMutation.mutateAsync({
                 image: publicUrl,
             });
+
+            toaster.success(
+                {
+                    title: "Profile Image Updated",
+                    description: "Your profile image has been updated successfully."
+                }
+            );
+
+            
 
             console.log("Profile updated successfully!");
         } catch (error) {

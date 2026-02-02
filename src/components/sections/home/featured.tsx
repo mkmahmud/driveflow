@@ -1,75 +1,21 @@
 "use client"
 
-import { FeaturedCard } from "@/components/cards/featuredCard"
+import { CarCard } from "@/components/cards/carCard"
+import { CarCardSkeleton } from "@/components/skeleton/carCardSkeleton"
+import { trpc } from "@/trpc/client"
 import { Box, Heading, Flex, Container, Text, Stack, IconButton, HStack } from "@chakra-ui/react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRef } from "react"
 
-const FEATURED_CARS = [
-    {
-        id: 1,
-        name: "Tesla Model S",
-        price: 150,
-        seats: 5,
-        type: "Electric",
-        rating: 4.8,
-        transmission: "Automatic",
-        image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=500&auto=format&fit=crop"
-    },
-    {
-        id: 2,
-        name: "BMW M4 Competition",
-        price: 200,
-        seats: 4,
-        type: "Luxury",
-        rating: 4.9,
-        transmission: "Automatic",
-        image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=500&auto=format&fit=crop"
-    },
-    {
-        id: 3,
-        name: "Range Rover Sport",
-        price: 180,
-        seats: 7,
-        type: "SUV",
-        rating: 4.7,
-        transmission: "Automatic",
-        image: "https://images.unsplash.com/photo-1606611013016-969c19ba27bb?q=80&w=500&auto=format&fit=crop"
-    },
-    {
-        id: 4,
-        name: "Porsche 911",
-        price: 250,
-        seats: 2,
-        type: "Sport",
-        rating: 4.9,
-        transmission: "Manual",
-        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=500&auto=format&fit=crop"
-    },
-    {
-        id: 5,
-        name: "Audi Q7",
-        price: 160,
-        seats: 7,
-        type: "SUV",
-        rating: 4.6,
-        transmission: "Automatic",
-        image: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=500&auto=format&fit=crop"
-    },
-    {
-        id: 6,
-        name: "Mercedes-Benz S-Class",
-        price: 220,
-        seats: 5,
-        type: "Luxury",
-        rating: 4.9,
-        transmission: "Automatic",
-        image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=500&auto=format&fit=crop"
-    },
-]
+
 
 export default function FeaturedCars() {
     const scrollRef = useRef<HTMLDivElement>(null)
+
+
+
+    const { data: cars, isLoading } = trpc.car.getAllCarsForHome.useQuery();
+
 
     const scroll = (direction: "left" | "right") => {
         if (scrollRef.current) {
@@ -206,15 +152,40 @@ export default function FeaturedCars() {
                             'scrollbarColor': '#CBD5E1 transparent'
                         }}
                     >
-                        {FEATURED_CARS.map((car) => (
+                        {cars?.map((car) => (
                             <Box
                                 key={car.id}
                                 minW={{ base: "280px", sm: "320px", md: "360px", lg: "380px" }}
                                 flexShrink={0}
                             >
-                                <FeaturedCard {...car} />
+                                <CarCard
+                                    key={car.id}
+                                    // @ts-ignore
+                                    id={car.id}
+                                    name={car.name}
+                                    seats={car.seats}
+                                    image={car.image}
+                                    price={car.pricePerDay}
+                                    type={car.type}
+                                    transmission={car.transmission[0]}
+                                    fuelType={car.fuelType}
+                                    rating={4.9}
+                                />
                             </Box>
                         ))}
+
+                        {
+                            isLoading && Array.from({ length: 4 }).map((_, index) => (
+                                <Box
+                                    key={index}
+                                    minW={{ base: "280px", sm: "320px", md: "360px", lg: "380px" }}
+                                    flexShrink={0}
+                                >
+                                    <CarCardSkeleton />
+                                </Box>
+                            ))
+                        }
+
                     </Box>
 
                     {/* Gradient fade effect on edges */}

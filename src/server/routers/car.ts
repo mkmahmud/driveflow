@@ -14,6 +14,19 @@ const s3Client = new S3Client({
 
 export const carRouter = router({
 
+
+    // Get All cars for home Page
+    getAllCarsForHome: publicProcedure
+        .query(async ({ ctx }) => {
+            return await ctx.db.car.findMany({
+                where: { isAvailable: true },
+                orderBy: { createdAt: "desc" },
+
+                take: 5,
+            });
+        }),
+
+
     // Get All Cars
     getAllCars: publicProcedure
         .input(

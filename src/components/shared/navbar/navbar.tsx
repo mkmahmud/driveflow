@@ -64,7 +64,7 @@ export default function Navbar() {
             backdropFilter="blur(10px)"
             backgroundColor="rgba(255, 255, 255, 0.9)"
             rounded={isScrolled ? "full" : "none"} // Rounded corners when scrolled
-            mx={isScrolled ? { base: "4", md: "200px" } : "0"} // Margin when minimized 
+            mx={isScrolled ? { base: "4", md: "50px" } : "0"} // Margin when minimized 
             transition="all 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
 
         >
@@ -109,7 +109,7 @@ export default function Navbar() {
             </HStack>
 
             {/* Desktop Navigation */}
-            <HStack gap="8" display={{ base: "none", md: "flex" }}>
+            <HStack gap="8"   display={{ base: "none", md: "flex" }}>
                 <NavLinks />
 
                 {!isLoading && user ? (
