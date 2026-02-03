@@ -2,7 +2,7 @@
 
 import {
   Box, Container, Grid, Stack, Text, Heading, HStack,
-  Badge, Image, Separator, Button, Flex, Avatar, SimpleGrid, Skeleton
+  Badge, Image, Separator, Button, Flex, Avatar, SimpleGrid
 } from "@chakra-ui/react"
 import {
   Star, MapPin, Users, Gauge, Fuel, ShieldCheck,
@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import { differenceInDays } from "date-fns"
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from "@/trpc/client"
+import LoadingSkeleton from "@/components/skeleton/caDetailsPage"
 
 export default function CarDetailsPage() {
   const params = useParams()
@@ -276,28 +277,5 @@ function FeatureCard({ icon: Icon, title }: { icon: any, title: string }) {
       <Box p="3" bg="teal.50" rounded="xl" color="teal.600"><Icon size={24} /></Box>
       <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" textAlign="center">{title}</Text>
     </Stack>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <Container maxW="breakpoint-xl" py="10">
-      <Stack gap="4" mb="8">
-        <Skeleton h="20px" w="200px" />
-        <Skeleton h="40px" w="400px" />
-      </Stack>
-      <Grid templateColumns={{ base: "1fr", lg: "1fr 400px" }} gap="10">
-        <Stack gap="8">
-          <Skeleton h="500px" rounded="3xl" />
-          <SimpleGrid columns={4} gap="4">
-            <Skeleton h="100px" rounded="2xl" />
-            <Skeleton h="100px" rounded="2xl" />
-            <Skeleton h="100px" rounded="2xl" />
-            <Skeleton h="100px" rounded="2xl" />
-          </SimpleGrid>
-        </Stack>
-        <Skeleton h="600px" rounded="3xl" />
-      </Grid>
-    </Container>
   )
 }
