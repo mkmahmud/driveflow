@@ -2,7 +2,7 @@ import { Box, Container, Flex, Grid, HStack, SimpleGrid, Skeleton, Stack } from 
 
 export default function LoadingSkeleton() {
     return (
-        <Box bg="gray.50/50" minH="100vh" py="10">
+        <Box bg="gray.50/50" minH="100vh" py="10" data-testid="skeleton-container">
             <Container maxW="breakpoint-xl">
                 {/* 1. Header Skeleton */}
                 <Stack gap="3" mb="8">
