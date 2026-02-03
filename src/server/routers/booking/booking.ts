@@ -38,6 +38,13 @@ export const bookingRouter = router({
                         includeTank: input.includeTank,
                         includeChildSeat: input.includeChildSeat,
                         status: "CONFIRMED",
+                        journey: {
+                            create: {
+                                title: "Booking Requested",
+                                status: "COMPLETED",
+                            }
+                        }
+
                     },
                 });
 
@@ -60,14 +67,12 @@ export const bookingRouter = router({
         .input(z.object({ sessionId: z.string() }))
         .mutation(async ({ input, ctx }) => {
             const stripe = getStripe();
-            //   Retrieve the session
             const session = await stripe.checkout.sessions.retrieve(input.sessionId);
 
             if (session.payment_status !== 'paid') {
                 throw new Error("Payment not verified");
             }
 
-            // Prevent duplicate bookings
             const existingPayment = await db.payment.findUnique({
                 where: { transactionId: session.id }
             });
@@ -76,22 +81,45 @@ export const bookingRouter = router({
             const meta = session.metadata;
             if (!meta) throw new Error("Missing metadata from Stripe session");
 
-            //   ATOMIC TRANSACTION WITH TYPE CASTING
             return await db.$transaction(async (tx) => {
+                // User KYC check
+                const user = await tx.user.findUnique({
+                    where: { id: ctx.userId },
+                    select: { isIdentityVerified: true }
+                });
+
+                const journeyPhases = [
+                    { title: "Booking Created", status: "COMPLETED" },
+                    { title: "Payment Successful", status: "COMPLETED" }
+                ];
+
+                if (user?.isIdentityVerified) {
+                    journeyPhases.push({
+                        title: "Identity Verified",
+                        status: "COMPLETED"
+                    });
+                }
+
                 const booking = await tx.booking.create({
                     data: {
                         userId: ctx.userId,
                         carId: meta.carId,
-                        // Ensure these are parsed correctly
                         startDate: new Date(meta.startDate),
                         endDate: new Date(meta.endDate),
-                        // Stripe uses cents, convert back to dollars/integers
                         totalPrice: Math.round((session.amount_total || 0) / 100),
-                        // Metadata is always a string "true" or "false"
                         includeTank: meta.includeTank === 'true',
                         includeChildSeat: meta.includeChildSeat === 'true',
+
                         status: "CONFIRMED",
+                        journey: {
+                            create: journeyPhases
+                        }
                     },
+                });
+
+                await tx.car.update({
+                    where: { id: meta.carId },
+                    data: { isAvailable: false },
                 });
 
                 await tx.payment.create({
@@ -161,6 +189,11 @@ export const bookingRouter = router({
                 where: { id: input.id },
                 include: {
                     car: true,
+                    journey: {
+                        orderBy: {
+                            createdAt: 'asc'
+                        }
+                    },
                     payment: true,
                 },
             });

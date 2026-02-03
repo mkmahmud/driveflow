@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Car: 'Car',
   Booking: 'Booking',
+  BookingPhase: 'BookingPhase',
   Payment: 'Payment',
   Incident: 'Incident',
   Account: 'Account',
@@ -156,6 +157,17 @@ export const BookingScalarFieldEnum = {
 } as const
 
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const BookingPhaseScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  status: 'status',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingPhaseScalarFieldEnum = (typeof BookingPhaseScalarFieldEnum)[keyof typeof BookingPhaseScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {

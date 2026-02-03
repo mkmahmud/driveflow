@@ -54,6 +54,22 @@ export default function BookingDetailsPage() {
     if (isLoading) return <Center h="80vh"><Spinner size="xl" /></Center>
     if (!booking) return <Center h="80vh">Booking details unavailable.</Center>
 
+    // Step Definitions
+    const MASTER_STEPS = [
+        { id: "Booking Created", title: "Reservation Confirmed", icon: <CheckCircle2 size={16} /> },
+        { id: "Payment Successful", title: "Payment Verified", icon: <CreditCard size={16} /> },
+        {
+            id: "Identity Verified",
+            title: "Identity & License Check",
+            icon: <ShieldCheck size={16} />,
+            // DYNAMIC CHECK: Look at the User model fields
+            isAutoDone: (booking: any) => booking.user.isIdentityVerified
+        },
+        { id: "Car Picked Up", title: "Vehicle Handover", icon: <MapPin size={16} /> },
+        { id: "Car Returned", title: "Return Inspection", icon: <Flag size={16} /> },
+        { id: "Settled", title: "Final Settlement", icon: <PackageCheck size={16} /> },
+    ];
+
     return (
         <Box maxW="1400px" mx="auto" p={{ base: 4, md: 12 }} bg="white">
 
@@ -122,68 +138,30 @@ export default function BookingDetailsPage() {
                         </Heading>
 
                         <VStack align="stretch" gap={0}>
-                            {/* STEP 1: INITIAL BOOKING */}
-                            <TimelineStep
-                                icon={<CheckCircle2 size={16} />}
-                                title="Reservation Confirmed"
-                                desc={`Trip secured on ${format(new Date(booking.createdAt), "MMM dd")}`}
-                                isDone={true}
-                                primaryColor={primaryColor}
-                            />
+                            {MASTER_STEPS.map((step, index) => {
+                                // Find if this specific step exists in the DB 'journey' array
+                                const dbPhase = booking.journey?.find((p: any) => p.title === step.id);
 
-                            {/* STEP 2: VERIFICATION (NEW) */}
-                            <TimelineStep
-                                icon={<ShieldCheck size={16} />}
-                                title="Identity & License Verified"
-                                desc="Digital document check completed successfully"
-                                isDone={true}
-                                primaryColor={primaryColor}
-                            />
+                                const isDone = !!dbPhase;
+                                const isLast = index === MASTER_STEPS.length - 1;
 
-                            {/* STEP 3: SECURITY DEPOSIT (NEW) */}
-                            <TimelineStep
-                                icon={<CreditCard size={16} />}
-                                title="Security Deposit Held"
-                                desc={`$${booking.car.securityDeposit}.00 authorized on card`}
-                                isDone={true}
-                                primaryColor={primaryColor}
-                            />
+                                // Dynamic Description: Show DB time if done, otherwise generic desc
+                                const displayDesc = dbPhase
+                                    ? `Completed on ${format(new Date(dbPhase.createdAt), "MMM dd, hh:mm a")}`
+                                    : `Awaiting ${step.title.toLowerCase()}`;
 
-                            {/* STEP 4: PICKUP (CURRENT) */}
-                            <TimelineStep
-                                icon={<MapPin size={16} />}
-                                title="Vehicle Handover"
-                                desc={`Collected from ${booking.car.location}`}
-                                isDone={isAfter(new Date(), new Date(booking.startDate))}
-                                primaryColor={primaryColor}
-                            />
-
-                            {/* STEP 5: ON THE ROAD (NEW) */}
-                            <TimelineStep
-                                icon={<Zap size={16} />}
-                                title="Active Rental Period"
-                                desc="Enjoy your drive! Support is available 24/7"
-                                isDone={isAfter(new Date(), new Date(booking.startDate)) && isBefore(new Date(), new Date(booking.endDate))}
-                                primaryColor={primaryColor}
-                            />
-
-                            {/* STEP 6: RETURN (FUTURE) */}
-                            <TimelineStep
-                                icon={<Flag size={16} />}
-                                title="Return Inspection"
-                                desc="Scheduled for fuel & damage verification"
-                                isDone={isAfter(new Date(), new Date(booking.endDate))}
-                                primaryColor={primaryColor}
-                            />
-
-                            {/* STEP 7: SETTLEMENT (NEW) */}
-                            <TimelineStep
-                                icon={<PackageCheck size={16} />}
-                                title="Final Settlement"
-                                desc="Deposit release & invoice finalization"
-                                isLast
-                                primaryColor={primaryColor}
-                            />
+                                return (
+                                    <TimelineStep
+                                        key={step.id}
+                                        icon={step.icon}
+                                        title={step.title}
+                                        desc={displayDesc}
+                                        isDone={isDone}
+                                        isLast={isLast}
+                                        primaryColor={primaryColor}
+                                    />
+                                );
+                            })}
                         </VStack>
                     </Box>
 

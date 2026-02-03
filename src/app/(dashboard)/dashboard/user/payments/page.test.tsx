@@ -12,7 +12,7 @@ vi.mock("@/trpc/client", () => ({
                 useQuery: vi.fn(),
             },
         },
-    },
+    }, 
 }));
 
 // Create a spy for the default export of html2canvas

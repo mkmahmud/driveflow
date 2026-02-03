@@ -387,6 +387,7 @@ export const ModelName = {
   User: 'User',
   Car: 'Car',
   Booking: 'Booking',
+  BookingPhase: 'BookingPhase',
   Payment: 'Payment',
   Incident: 'Incident',
   Account: 'Account',
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "car" | "booking" | "payment" | "incident" | "account" | "session" | "verificationToken" | "review"
+    modelProps: "user" | "car" | "booking" | "bookingPhase" | "payment" | "incident" | "account" | "session" | "verificationToken" | "review"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -631,6 +632,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BookingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BookingCountAggregateOutputType> | number
+        }
+      }
+    }
+    BookingPhase: {
+      payload: Prisma.$BookingPhasePayload<ExtArgs>
+      fields: Prisma.BookingPhaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BookingPhaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BookingPhaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        findFirst: {
+          args: Prisma.BookingPhaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BookingPhaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        findMany: {
+          args: Prisma.BookingPhaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>[]
+        }
+        create: {
+          args: Prisma.BookingPhaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        createMany: {
+          args: Prisma.BookingPhaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BookingPhaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>[]
+        }
+        delete: {
+          args: Prisma.BookingPhaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        update: {
+          args: Prisma.BookingPhaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        deleteMany: {
+          args: Prisma.BookingPhaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BookingPhaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BookingPhaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>[]
+        }
+        upsert: {
+          args: Prisma.BookingPhaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BookingPhasePayload>
+        }
+        aggregate: {
+          args: Prisma.BookingPhaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBookingPhase>
+        }
+        groupBy: {
+          args: Prisma.BookingPhaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingPhaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BookingPhaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BookingPhaseCountAggregateOutputType> | number
         }
       }
     }
@@ -1197,6 +1272,17 @@ export const BookingScalarFieldEnum = {
 export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
 
 
+export const BookingPhaseScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  status: 'status',
+  bookingId: 'bookingId',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingPhaseScalarFieldEnum = (typeof BookingPhaseScalarFieldEnum)[keyof typeof BookingPhaseScalarFieldEnum]
+
+
 export const PaymentScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
@@ -1479,6 +1565,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   car?: Prisma.CarOmit
   booking?: Prisma.BookingOmit
+  bookingPhase?: Prisma.BookingPhaseOmit
   payment?: Prisma.PaymentOmit
   incident?: Prisma.IncidentOmit
   account?: Prisma.AccountOmit

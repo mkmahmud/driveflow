@@ -111,6 +111,8 @@ model Booking {
   endFuelLevel     Int?
 
    
+
+   
   actualPickupTime DateTime? 
   actualReturnTime DateTime?
 
@@ -118,12 +120,23 @@ model Booking {
   car              Car       @relation(fields: [carId], references: [id])
   userId           String
   user             User      @relation(fields: [userId], references: [id])
+
+  journey          BookingPhase[]
   
   payment          Payment?
-  incidents        Incident[] // New relation for disputes
+  incidents        Incident[]  
 
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+}
+
+model BookingPhase {
+  id        String   @id @default(cuid())
+  title     String   // e.g., "Reservation Confirmed", "Keys Handed Over"
+  status    String   // e.g., "COMPLETED", "CURRENT"
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 // --- PAYMENT MODEL ---
