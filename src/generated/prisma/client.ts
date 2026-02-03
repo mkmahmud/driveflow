@@ -55,6 +55,11 @@ export type Car = Prisma.CarModel
  */
 export type Booking = Prisma.BookingModel
 /**
+ * Model BookingPhase
+ * 
+ */
+export type BookingPhase = Prisma.BookingPhaseModel
+/**
  * Model Payment
  * 
  */

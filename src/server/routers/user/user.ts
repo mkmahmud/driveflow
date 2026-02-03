@@ -193,9 +193,40 @@ export const userRouter = router({
     updateKycStatus: adminProcedure
         .input(z.object({ userId: z.string(), verified: z.boolean() }))
         .mutation(async ({ input, ctx }) => {
-            return await ctx.db.user.update({
-                where: { id: input.userId },
-                data: { isIdentityVerified: input.verified },
+            return await ctx.db.$transaction(async (tx) => {
+                // 1. Update the User's main status
+                const user = await tx.user.update({
+                    where: { id: input.userId },
+                    data: { isIdentityVerified: input.verified },
+                });
+
+                // 2. Only if we are VERIFYING (true), create the journey entry
+                if (input.verified) {
+                    // Find all bookings for this user that aren't finished/cancelled
+                    const activeBookings = await tx.booking.findMany({
+                        where: {
+                            userId: input.userId,
+                            status: { in: ["CONFIRMED", "PENDING"] }
+                        },
+                        select: { id: true }
+                    });
+
+                    // 3. Add the phase to each active booking's journey
+                    // Using createMany for efficiency
+                    if (activeBookings.length > 0) {
+                        await tx.bookingPhase.createMany({
+                            data: activeBookings.map((b) => ({
+                                bookingId: b.id,
+                                title: "Identity Verified",
+                                status: "COMPLETED",
+                            })),
+                            // Avoid duplicates if they click verify twice
+                            skipDuplicates: true
+                        });
+                    }
+                }
+
+                return user;
             });
         }),
 

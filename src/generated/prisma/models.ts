@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/Car'
 export type * from './models/Booking'
+export type * from './models/BookingPhase'
 export type * from './models/Payment'
 export type * from './models/Incident'
 export type * from './models/Account'
