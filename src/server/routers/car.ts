@@ -20,6 +20,7 @@ export const carRouter = router({
         .query(async ({ ctx }) => {
             return await ctx.db.car.findMany({
                 where: { isAvailable: true },
+
                 orderBy: { createdAt: "desc" },
 
                 take: 5,
@@ -62,6 +63,10 @@ export const carRouter = router({
                                     location: { contains: term, mode: "insensitive" as const },
                                 })),
                             ],
+                        },
+
+                        {
+                            isAvailable: true,
                         },
 
                         // DATE  

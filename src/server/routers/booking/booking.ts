@@ -109,11 +109,17 @@ export const bookingRouter = router({
                         totalPrice: Math.round((session.amount_total || 0) / 100),
                         includeTank: meta.includeTank === 'true',
                         includeChildSeat: meta.includeChildSeat === 'true',
+
                         status: "CONFIRMED",
                         journey: {
                             create: journeyPhases
                         }
                     },
+                });
+
+                await tx.car.update({
+                    where: { id: meta.carId },
+                    data: { isAvailable: false },
                 });
 
                 await tx.payment.create({
