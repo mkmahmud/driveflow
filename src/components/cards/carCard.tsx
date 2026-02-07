@@ -4,6 +4,7 @@ import { Box, Image, Text, Flex, Stack, HStack, Badge, Icon, Button, Separator, 
 import { Users, Star, Gauge, Sparkles, Heart, Fuel, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import AddToWishlist from "./addToWishlist"
 
 interface CarCardProps {
   id: number
@@ -19,8 +20,7 @@ interface CarCardProps {
 
 export function CarCard({ id, name, image, price, seats, type, rating, transmission, fuelType = "Hybrid" }: CarCardProps) {
   const router = useRouter()
-  const [isFavorite, setIsFavorite] = useState(false)
-
+ 
   return (
     <Box
 
@@ -58,18 +58,8 @@ export function CarCard({ id, name, image, price, seats, type, rating, transmiss
           {type}
         </Badge>
 
-        <Box
-          onClick={(e) => { e.stopPropagation(); setIsFavorite(!isFavorite); }}
-          bg="white"
-          p="2"
-          rounded="full"
-          shadow="md"
-          color={isFavorite ? "red.500" : "gray.400"}
-          transition="all 0.2s"
-          _hover={{ transform: "scale(1.1)", color: "red.500" }}
-        >
-          <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
-        </Box>
+
+        <AddToWishlist carId={id.toString()} />
       </Flex>
 
       {/* 2. Visual Content */}

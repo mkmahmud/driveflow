@@ -247,6 +247,7 @@ export type UserWhereInput = {
   cars?: Prisma.CarListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
+  wishlists?: Prisma.WishlistListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -268,6 +269,7 @@ export type UserOrderByWithRelationInput = {
   cars?: Prisma.CarOrderByRelationAggregateInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
+  wishlists?: Prisma.WishlistOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -292,6 +294,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   cars?: Prisma.CarListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
   reviews?: Prisma.ReviewListRelationFilter
+  wishlists?: Prisma.WishlistListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -351,6 +354,7 @@ export type UserCreateInput = {
   cars?: Prisma.CarCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -372,6 +376,7 @@ export type UserUncheckedCreateInput = {
   cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -393,6 +398,7 @@ export type UserUpdateInput = {
   cars?: Prisma.CarUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -414,6 +420,7 @@ export type UserUncheckedUpdateInput = {
   cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -626,6 +633,20 @@ export type UserUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReviewsInput, Prisma.UserUpdateWithoutReviewsInput>, Prisma.UserUncheckedUpdateWithoutReviewsInput>
 }
 
+export type UserCreateNestedOneWithoutWishlistsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWishlistsInput, Prisma.UserUncheckedCreateWithoutWishlistsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWishlistsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWishlistsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWishlistsInput, Prisma.UserUncheckedCreateWithoutWishlistsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWishlistsInput
+  upsert?: Prisma.UserUpsertWithoutWishlistsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWishlistsInput, Prisma.UserUpdateWithoutWishlistsInput>, Prisma.UserUncheckedUpdateWithoutWishlistsInput>
+}
+
 export type UserCreateWithoutCarsInput = {
   id?: string
   name?: string | null
@@ -644,6 +665,7 @@ export type UserCreateWithoutCarsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCarsInput = {
@@ -664,6 +686,7 @@ export type UserUncheckedCreateWithoutCarsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCarsInput = {
@@ -700,6 +723,7 @@ export type UserUpdateWithoutCarsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCarsInput = {
@@ -720,6 +744,7 @@ export type UserUncheckedUpdateWithoutCarsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBookingsInput = {
@@ -740,6 +765,7 @@ export type UserCreateWithoutBookingsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   cars?: Prisma.CarCreateNestedManyWithoutHostInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBookingsInput = {
@@ -760,6 +786,7 @@ export type UserUncheckedCreateWithoutBookingsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBookingsInput = {
@@ -796,6 +823,7 @@ export type UserUpdateWithoutBookingsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   cars?: Prisma.CarUpdateManyWithoutHostNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBookingsInput = {
@@ -816,6 +844,7 @@ export type UserUncheckedUpdateWithoutBookingsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -836,6 +865,7 @@ export type UserCreateWithoutAccountsInput = {
   cars?: Prisma.CarCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -856,6 +886,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -892,6 +923,7 @@ export type UserUpdateWithoutAccountsInput = {
   cars?: Prisma.CarUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -912,6 +944,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -932,6 +965,7 @@ export type UserCreateWithoutSessionsInput = {
   cars?: Prisma.CarCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -952,6 +986,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -988,6 +1023,7 @@ export type UserUpdateWithoutSessionsInput = {
   cars?: Prisma.CarUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1008,6 +1044,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReviewsInput = {
@@ -1028,6 +1065,7 @@ export type UserCreateWithoutReviewsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   cars?: Prisma.CarCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReviewsInput = {
@@ -1048,6 +1086,7 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReviewsInput = {
@@ -1084,6 +1123,7 @@ export type UserUpdateWithoutReviewsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   cars?: Prisma.CarUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReviewsInput = {
@@ -1104,6 +1144,107 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWishlistsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.Role
+  phoneNumber?: string | null
+  kyc?: Prisma.UserCreatekycInput | string[]
+  isKycUploaded?: boolean
+  isIdentityVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  cars?: Prisma.CarCreateNestedManyWithoutHostInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWishlistsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  emailVerified?: Date | string | null
+  image?: string | null
+  password?: string | null
+  role?: $Enums.Role
+  phoneNumber?: string | null
+  kyc?: Prisma.UserCreatekycInput | string[]
+  isKycUploaded?: boolean
+  isIdentityVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  cars?: Prisma.CarUncheckedCreateNestedManyWithoutHostInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWishlistsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWishlistsInput, Prisma.UserUncheckedCreateWithoutWishlistsInput>
+}
+
+export type UserUpsertWithoutWishlistsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWishlistsInput, Prisma.UserUncheckedUpdateWithoutWishlistsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWishlistsInput, Prisma.UserUncheckedCreateWithoutWishlistsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWishlistsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWishlistsInput, Prisma.UserUncheckedUpdateWithoutWishlistsInput>
+}
+
+export type UserUpdateWithoutWishlistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kyc?: Prisma.UserUpdatekycInput | string[]
+  isKycUploaded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isIdentityVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  cars?: Prisma.CarUpdateManyWithoutHostNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWishlistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kyc?: Prisma.UserUpdatekycInput | string[]
+  isKycUploaded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isIdentityVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  cars?: Prisma.CarUncheckedUpdateManyWithoutHostNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1117,6 +1258,7 @@ export type UserCountOutputType = {
   cars: number
   bookings: number
   reviews: number
+  wishlists: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1125,6 +1267,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   cars?: boolean | UserCountOutputTypeCountCarsArgs
   bookings?: boolean | UserCountOutputTypeCountBookingsArgs
   reviews?: boolean | UserCountOutputTypeCountReviewsArgs
+  wishlists?: boolean | UserCountOutputTypeCountWishlistsArgs
 }
 
 /**
@@ -1172,6 +1315,13 @@ export type UserCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.ReviewWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWishlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WishlistWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1192,6 +1342,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   cars?: boolean | Prisma.User$carsArgs<ExtArgs>
   bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
+  wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1250,6 +1401,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   cars?: boolean | Prisma.User$carsArgs<ExtArgs>
   bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
+  wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1263,6 +1415,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     cars: Prisma.$CarPayload<ExtArgs>[]
     bookings: Prisma.$BookingPayload<ExtArgs>[]
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
+    wishlists: Prisma.$WishlistPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1677,6 +1830,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   cars<T extends Prisma.User$carsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$carsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CarPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookings<T extends Prisma.User$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.User$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  wishlists<T extends Prisma.User$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2224,6 +2378,30 @@ export type User$reviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.ReviewScalarFieldEnum | Prisma.ReviewScalarFieldEnum[]
+}
+
+/**
+ * User.wishlists
+ */
+export type User$wishlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Wishlist
+   */
+  select?: Prisma.WishlistSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Wishlist
+   */
+  omit?: Prisma.WishlistOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WishlistInclude<ExtArgs> | null
+  where?: Prisma.WishlistWhereInput
+  orderBy?: Prisma.WishlistOrderByWithRelationInput | Prisma.WishlistOrderByWithRelationInput[]
+  cursor?: Prisma.WishlistWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WishlistScalarFieldEnum | Prisma.WishlistScalarFieldEnum[]
 }
 
 /**
