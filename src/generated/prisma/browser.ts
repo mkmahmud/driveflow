@@ -67,3 +67,8 @@ export type VerificationToken = Prisma.VerificationTokenModel
  * 
  */
 export type Review = Prisma.ReviewModel
+/**
+ * Model Wishlist
+ * 
+ */
+export type Wishlist = Prisma.WishlistModel

@@ -30,7 +30,8 @@ model User {
   sessions      Session[]
   cars          Car[]     
   bookings      Booking[] 
-  reviews       Review[]  
+  reviews       Review[]
+  wishlists     Wishlist[]  
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -81,6 +82,7 @@ model Car {
   host            User      @relation(fields: [hostId], references: [id])
   bookings        Booking[]
   reviews         Review[]
+  wishlists       Wishlist[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -215,4 +217,16 @@ model Review {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  carId     String
+  car       Car      @relation(fields: [carId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([carId, userId])
 }

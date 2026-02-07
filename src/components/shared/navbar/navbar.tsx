@@ -11,7 +11,7 @@ import {
     DrawerBody,
     DrawerCloseTrigger
 } from "@/components/ui/drawer"
-import { LogOut, Menu, UserIcon, Car, Sparkles } from "lucide-react"
+import { LogOut, Menu, UserIcon, Car, Sparkles, Heart } from "lucide-react"
 import NextLink from "next/link"
 import { useEffect, useState } from "react"
 import Image from "next/image"
@@ -25,6 +25,8 @@ export default function Navbar() {
     const { user, logout, isLoading } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false) // Track scroll state
 
+
+
     // Scroll listener logic
     useEffect(() => {
         const handleScroll = () => {
@@ -33,7 +35,7 @@ export default function Navbar() {
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
-
+    console.log(user)
 
     // Nav links
     const NavLinks = () => (
@@ -46,6 +48,17 @@ export default function Navbar() {
                     </HStack>
                 </NextLink>
             </ChakraLink>
+            {
+                user && (
+                    <ChakraLink asChild variant="plain" fontWeight="medium">
+                        <NextLink href="/dashboard/wishlists" >
+                            <HStack _hover={{ color: "primary" }} gap="1" px="3" outline="none" py="2" borderRadius="lg" >
+                                <Heart size={16} color="black" />
+                            </HStack>
+                        </NextLink>
+                    </ChakraLink>
+                )
+            }
         </>
     )
 
@@ -109,7 +122,7 @@ export default function Navbar() {
             </HStack>
 
             {/* Desktop Navigation */}
-            <HStack gap="8"   display={{ base: "none", md: "flex" }}>
+            <HStack gap="8" display={{ base: "none", md: "flex" }}>
                 <NavLinks />
 
                 {!isLoading && user ? (

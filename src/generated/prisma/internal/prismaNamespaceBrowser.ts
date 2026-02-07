@@ -60,7 +60,8 @@ export const ModelName = {
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
-  Review: 'Review'
+  Review: 'Review',
+  Wishlist: 'Wishlist'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -246,6 +247,16 @@ export const ReviewScalarFieldEnum = {
 } as const
 
 export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
+
+
+export const WishlistScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type WishlistScalarFieldEnum = (typeof WishlistScalarFieldEnum)[keyof typeof WishlistScalarFieldEnum]
 
 
 export const SortOrder = {
