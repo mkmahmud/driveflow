@@ -142,6 +142,7 @@ export const bookingRouter = router({
         .input(z.object({
             bookingId: z.string(),
             pickupPhotos: z.array(z.string()).optional(),
+            returnPhotos: z.array(z.string()).optional(),
         }))
         .mutation(async ({ input, ctx }) => {
             const booking = await db.booking.findUnique({
@@ -156,7 +157,7 @@ export const bookingRouter = router({
                 where: { id: input.bookingId },
                 data: {
                     pickupPhotos: input.pickupPhotos ? { push: input.pickupPhotos } : undefined,
-
+                    returnPhotos: input.returnPhotos ? { push: input.returnPhotos } : undefined,
                 },
             });
 
@@ -165,23 +166,28 @@ export const bookingRouter = router({
 
 
     // Handover Booking (e.g., mark as picked up, mark as returned, etc.)
-    handoverBooking: hostProcedure
+    returnorHandover: hostProcedure
         .input(z.object({
             bookingId: z.string(),
             handoverStatus: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).optional(),
+            returnInspections: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).optional(),
         }))
-        .mutation(async ({ input, ctx }) => {
-            const booking = await db.bookingPhase.create({
+        .mutation(async ({ input }) => {
+            const isHandover = !!input.handoverStatus;
+            const status = input.handoverStatus || input.returnInspections;
+
+            if (!status) return { success: false, message: "No status provided" };
+
+            await db.bookingPhase.create({
                 data: {
                     bookingId: input.bookingId,
-                    title: "Vehicle Handover",
-                    status: input.handoverStatus || "PENDING",
+                    title: isHandover ? "Vehicle Handover" : "Return Inspection",
+                    status: status,
                 },
             });
 
-            return booking;
+            return { success: true };
         }),
-
 
 
     // Get My Bookings

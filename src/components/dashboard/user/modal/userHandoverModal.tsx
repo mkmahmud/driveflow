@@ -23,9 +23,10 @@ interface UserHandoverModalProps {
     booking: any;
     open: boolean;
     onClose: () => void;
+    mode?: "pickup" | "return";
 }
 
-export default function UserHandoverModal({ booking, open, onClose }: UserHandoverModalProps) {
+export default function UserHandoverModal({ booking, open, onClose, mode }: UserHandoverModalProps) {
 
     // Trpc
     const getUploadUrl = trpc.car.getUploadUrlForAll.useMutation();
@@ -92,15 +93,22 @@ export default function UserHandoverModal({ booking, open, onClose }: UserHandov
             }
 
 
-            // ?Update Pickup Images in Booking 
-            await updatebookinPickUp.mutateAsync({
-                bookingId: booking.id,
-                pickupPhotos: finalS3Urls,
-            });
+            // Update Pickup Images in Booking 
 
-            console.log("Final S3 URLs:", finalS3Urls);
+            mode === "pickup" ?
 
-            toaster.success({ title: "Upload Successful", description: "Car pickup images uploaded successfully." });
+                await updatebookinPickUp.mutateAsync({
+                    bookingId: booking.id,
+                    pickupPhotos: finalS3Urls,
+                }) :
+
+                await updatebookinPickUp.mutateAsync({
+                    bookingId: booking.id,
+                    returnPhotos: finalS3Urls,
+                });
+
+
+            toaster.success({ title: "Upload Successful", description: mode === "pickup" ? "Car pickup images uploaded successfully." : "Car return images uploaded successfully." });
             onClose();
 
 
@@ -127,7 +135,9 @@ export default function UserHandoverModal({ booking, open, onClose }: UserHandov
                     <Dialog.Content rounded="3xl" p={2} bg={"white"}>
                         <Dialog.Header>
                             <Dialog.Title fontWeight="900" fontSize="xl">
-                                Pickup and confirm
+                                {
+                                    mode === "pickup" ? "Car Pickup Confirmation" : "Car Return Confirmation"
+                                }
                             </Dialog.Title>
                         </Dialog.Header>
 
@@ -135,7 +145,6 @@ export default function UserHandoverModal({ booking, open, onClose }: UserHandov
                             <MediaUpload
                                 formData={formData}
                                 setFormData={setFormData}
-
                                 onSubmit={handleSubmit}
                                 fileInputRef={fileInputRef}
                                 handleImageUpload={handleImageUpload}

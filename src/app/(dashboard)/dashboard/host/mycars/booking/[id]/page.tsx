@@ -2,14 +2,14 @@
 
 import {
     Box, Flex, Stack, Heading, Text, Badge, HStack, Grid,
-    Image, Button, Circle, VStack, SimpleGrid, Separator,
-    Textarea, Center, Spinner,
+    Image, Button, Circle, VStack, SimpleGrid,
+    Center, Spinner,
     Avatar,
     IconButton
 } from "@chakra-ui/react"
 import {
-    ChevronLeft, Camera, ShieldCheck, User,
-    MapPin, Flag, CheckCircle2, AlertCircle,
+    ChevronLeft, ShieldCheck,
+    MapPin, Flag,
     ArrowRightLeft, Gauge, Fuel,
     ExternalLink
 } from "lucide-react"
@@ -24,19 +24,31 @@ export default function HostManageBookingPage() {
 
     const { data: booking, isLoading } = trpc.booking.getBookingDetails.useQuery({ id })
 
+    const returnPhotos = booking?.returnPhotos || [];
+
     // trpc mutation for handover
-    const { mutateAsync: handoverBooking } = trpc.booking.handoverBooking.useMutation();
+    const { mutateAsync: vehicleStatus } = trpc.booking.returnorHandover.useMutation();
 
     const handleHandover = async () => {
         try {
-            await handoverBooking({
+            await vehicleStatus({
                 bookingId: id,
                 handoverStatus: "COMPLETED",
             });
             alert("Vehicle handover completed successfully!");
         } catch (error) {
-            console.error("Error during handover:", error);
             alert("An error occurred during handover. Please try again.");
+        }
+    }
+    const acceptVehicle = async () => {
+        try {
+            await vehicleStatus({
+                bookingId: id,
+                returnInspections: "COMPLETED",
+            });
+            alert("Vehicle return inspection completed successfully!");
+        } catch (error) {
+            alert("An error occurred during return inspection. Please try again.");
         }
     }
 
@@ -149,6 +161,55 @@ export default function HostManageBookingPage() {
                             {/* Key handover */}
                             <Button variant="surface" colorPalette="teal" onClick={handleHandover}   >
                                 Handover Vehicle
+                            </Button>
+                        </Box>
+                    }
+                    {/* 2. INSPECTION & PHOTOS */}
+                    {
+                        booking?.returnPhotos && booking.returnPhotos.length > 0 && <Box p={8} border="1px solid" borderColor="gray.100" rounded="3xl">
+                            <Heading size="xs" fontWeight="black" mb={6} letterSpacing="0.1em">Return INSPECTION</Heading>
+                            <SimpleGrid columns={{ base: 2, md: 4 }} gap={4} mb={8}>
+                                {booking?.returnPhotos.map((url, index) => (
+                                    <Box
+                                        key={index}
+                                        bg="white"
+                                        p={4}
+                                        w={'full'}
+                                        rounded="2xl"
+                                        border="1px solid"
+                                        borderColor="gray.200"
+                                        transition="all 0.2s"
+                                        _hover={{ borderColor: "emerald.400" }}
+                                    >
+                                        <Flex justify="space-between" align="center" mb={4}>
+
+                                            <IconButton
+                                                size="xs"
+                                                onClick={() => window.open(url, "_blank")}
+                                                aria-label="View original"
+                                            >
+                                                <ExternalLink size={14} />
+                                            </IconButton>
+                                        </Flex>
+
+                                        <Box rounded="xl" overflow="hidden" bg="gray.50" border="1px solid" borderColor="gray.100">
+                                            <Image
+                                                src={url}
+                                                alt="KYC Document"
+                                                w="full"
+                                                h="full"
+                                                objectFit="contain"
+                                                p={2}
+
+                                            />
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </SimpleGrid>
+
+                            {/* Key handover */}
+                            <Button variant="surface" colorPalette="teal" onClick={acceptVehicle}   >
+                                Accept Vehicle
                             </Button>
                         </Box>
                     }

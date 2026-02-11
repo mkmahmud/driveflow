@@ -71,19 +71,20 @@ export default function BookingDetailsPage() {
             isAutoDone: (booking: any) => booking.user.isIdentityVerified
         },
         { id: "Vehicle Handover", title: "Vehicle Handover", icon: <MapPin size={16} /> },
-        { id: "Car Returned", title: "Return Inspection", icon: <Flag size={16} /> },
+        { id: "Return Inspection", title: "Return Inspection", icon: <Flag size={16} /> },
         { id: "Settled", title: "Final Settlement", icon: <PackageCheck size={16} /> },
     ];
 
-
-    console.log("Booking Data:", booking);
+    // Check Vehicle Handover Status
+    const isHandedOver = !!booking.journey?.find((p: any) => p.title == "Vehicle Handover");
 
     return (
         <Box maxW="1400px" mx="auto" p={{ base: 4, md: 12 }} bg="white">
 
-            {/* Recive Vehicle  */}
+            {/* Receive Vehicle  */}
+
             {
-                booking.pickupPhotos && booking.pickupPhotos.length > 0 ? (
+                !isHandedOver ? booking.pickupPhotos && booking.pickupPhotos.length > 0 ? (
                     <Box mb={8} p={4} border="1px solid" borderColor="green.300" borderRadius="xl" bg="green.50">
                         <HStack>
                             <ShieldCheck size={20} color="green" />
@@ -106,10 +107,32 @@ export default function BookingDetailsPage() {
                         booking={booking}
                         open={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
+                        mode="pickup"
                     />
                 </Box>
+                    : ''
             }
 
+            {/* Return Options */}
+            {
+                isHandedOver && <Box mb={8} p={4} >
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        colorPalette="red"
+                        fontWeight="black"
+                        className="w-full"
+                    >
+                        Return Vehicle
+                    </Button>
+                    <UserHandoverModal
+                        booking={booking}
+                        open={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        mode="return"
+                    />
+
+                </Box>
+            }
 
 
 
