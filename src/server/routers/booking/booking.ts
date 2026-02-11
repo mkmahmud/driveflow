@@ -1,6 +1,6 @@
 // server/routers/booking.ts
 import { db } from "@/server/db";
-import { protectedProcedure, router } from "@/server/trpc";
+import { hostProcedure, protectedProcedure, router } from "@/server/trpc";
 import { z } from "zod";
 import Stripe from 'stripe';
 
@@ -194,8 +194,46 @@ export const bookingRouter = router({
                             createdAt: 'asc'
                         }
                     },
+                    user: true,
                     payment: true,
                 },
             });
+        }),
+
+
+    // Host: Get Bookings for my specific Car
+    getBookingsForMyCars: hostProcedure
+        .input(
+            z.object({
+                carId: z.string(),
+                limit: z.number().min(1).max(100).default(10),
+                page: z.number().min(1).default(1),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const { carId, limit, page } = input;
+            const skip = (page - 1) * limit;
+            // Run both queries in parallel for better performance
+            const [bookings, totalCount] = await Promise.all([
+                ctx.db.booking.findMany({
+                    where: { carId: carId },
+                    orderBy: { createdAt: 'desc' },
+                    include: { car: true, user: true },
+                    take: limit,
+                    skip: skip,
+                }),
+                ctx.db.booking.count({
+                    where: { carId: carId },
+                }),
+            ]);
+            return {
+                bookings,
+                meta: {
+                    totalCount,
+                    totalPages: Math.ceil(totalCount / limit),
+                    currentPage: page,
+                    hasMore: skip + bookings.length < totalCount,
+                },
+            };
         }),
 });

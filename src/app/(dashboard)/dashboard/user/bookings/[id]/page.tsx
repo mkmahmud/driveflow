@@ -24,7 +24,7 @@ export default function BookingDetailsPage() {
 
     // Change this to your actual primary color name or hex
     const primaryColor = "teal.500"
-    const primaryBg = "teal.50"
+     
 
     const { data: booking, isLoading } = trpc.booking.getBookingDetails.useQuery({ id })
     const [timeLeft, setTimeLeft] = useState<any>(null)
