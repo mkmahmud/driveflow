@@ -136,6 +136,54 @@ export const bookingRouter = router({
             });
         }),
 
+
+    // Update Booking (e.g., pickup details, return details, etc.)
+    updateBooking: protectedProcedure
+        .input(z.object({
+            bookingId: z.string(),
+            pickupPhotos: z.array(z.string()).optional(),
+        }))
+        .mutation(async ({ input, ctx }) => {
+            const booking = await db.booking.findUnique({
+                where: { id: input.bookingId },
+                include: { car: true },
+            });
+            if (!booking) {
+                throw new Error("Booking not found");
+            }
+
+            const updatedBooking = await db.booking.update({
+                where: { id: input.bookingId },
+                data: {
+                    pickupPhotos: input.pickupPhotos ? { push: input.pickupPhotos } : undefined,
+
+                },
+            });
+
+            return updatedBooking;
+        }),
+
+
+    // Handover Booking (e.g., mark as picked up, mark as returned, etc.)
+    handoverBooking: hostProcedure
+        .input(z.object({
+            bookingId: z.string(),
+            handoverStatus: z.enum(["PENDING", "COMPLETED", "CANCELLED"]).optional(),
+        }))
+        .mutation(async ({ input, ctx }) => {
+            const booking = await db.bookingPhase.create({
+                data: {
+                    bookingId: input.bookingId,
+                    title: "Vehicle Handover",
+                    status: input.handoverStatus || "PENDING",
+                },
+            });
+
+            return booking;
+        }),
+
+
+
     // Get My Bookings
     getMyBookings: protectedProcedure
         .input(
@@ -236,4 +284,9 @@ export const bookingRouter = router({
                 },
             };
         }),
+
+
+
+
+
 });

@@ -3,7 +3,8 @@
 import {
     Box, Grid, Stack, Heading, Text, Badge, HStack, Flex,
     Button, Circle, Image, VStack, Center, Spinner,
-    SimpleGrid, Icon, Checkbox
+    SimpleGrid, Icon, Checkbox,
+    useDisclosure
 } from "@chakra-ui/react"
 import {
     MapPin, Fuel, Users, Timer, CreditCard,
@@ -16,6 +17,7 @@ import { useParams, useRouter } from "next/navigation"
 import { trpc } from "@/trpc/client"
 import { format, intervalToDuration, isAfter, isBefore } from "date-fns"
 import { useEffect, useState } from "react"
+import UserHandoverModal from "@/components/dashboard/user/modal/userHandoverModal"
 
 export default function BookingDetailsPage() {
     const params = useParams()
@@ -24,7 +26,10 @@ export default function BookingDetailsPage() {
 
     // Change this to your actual primary color name or hex
     const primaryColor = "teal.500"
-     
+
+    // 1. Manage the state here
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
 
     const { data: booking, isLoading } = trpc.booking.getBookingDetails.useQuery({ id })
     const [timeLeft, setTimeLeft] = useState<any>(null)
@@ -65,16 +70,51 @@ export default function BookingDetailsPage() {
             // DYNAMIC CHECK: Look at the User model fields
             isAutoDone: (booking: any) => booking.user.isIdentityVerified
         },
-        { id: "Car Picked Up", title: "Vehicle Handover", icon: <MapPin size={16} /> },
+        { id: "Vehicle Handover", title: "Vehicle Handover", icon: <MapPin size={16} /> },
         { id: "Car Returned", title: "Return Inspection", icon: <Flag size={16} /> },
         { id: "Settled", title: "Final Settlement", icon: <PackageCheck size={16} /> },
     ];
 
+
+    console.log("Booking Data:", booking);
+
     return (
         <Box maxW="1400px" mx="auto" p={{ base: 4, md: 12 }} bg="white">
 
-            {/* 1. ULTRA-MINIMAL PROGRESS BAR */}
-            <Box mb={16} position="relative">
+            {/* Recive Vehicle  */}
+            {
+                booking.pickupPhotos && booking.pickupPhotos.length > 0 ? (
+                    <Box mb={8} p={4} border="1px solid" borderColor="green.300" borderRadius="xl" bg="green.50">
+                        <HStack>
+                            <ShieldCheck size={20} color="green" />
+                            <Text fontWeight="bold" color="green.800">
+                                Pickup photos have been uploaded.
+                            </Text>
+                        </HStack>
+                    </Box>
+                ) : <Box mb={8} p={4} >
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        colorPalette="teal"
+                        fontWeight="black"
+                        className="w-full"
+                    >
+                        Pick Up Vehicle
+                    </Button>
+
+                    <UserHandoverModal
+                        booking={booking}
+                        open={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                    />
+                </Box>
+            }
+
+
+
+
+            {/* Progress Bar */}
+            <Box mb="16" position="relative">
                 <HStack justify="space-between" mb={3}>
                     <HStack>
                         <PulseCircle color={primaryColor} />
@@ -86,6 +126,8 @@ export default function BookingDetailsPage() {
                     <Box h="full" w={`${percentDone}%`} bg={primaryColor} transition="width 1.5s cubic-bezier(0.65, 0, 0.35, 1)" />
                 </Box>
             </Box>
+
+
 
             {/* 2. DUAL-GRID LAYOUT */}
             <Grid templateColumns={{ base: "1fr", xl: "1.4fr 0.6fr" }} gap={20}>

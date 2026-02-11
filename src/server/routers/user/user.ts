@@ -212,7 +212,6 @@ export const userRouter = router({
                     });
 
                     // 3. Add the phase to each active booking's journey
-                    // Using createMany for efficiency
                     if (activeBookings.length > 0) {
                         await tx.bookingPhase.createMany({
                             data: activeBookings.map((b) => ({

@@ -4,12 +4,14 @@ import {
     Box, Flex, Stack, Heading, Text, Badge, HStack, Grid,
     Image, Button, Circle, VStack, SimpleGrid, Separator,
     Textarea, Center, Spinner,
-    Avatar
+    Avatar,
+    IconButton
 } from "@chakra-ui/react"
 import {
     ChevronLeft, Camera, ShieldCheck, User,
     MapPin, Flag, CheckCircle2, AlertCircle,
-    ArrowRightLeft, Gauge, Fuel
+    ArrowRightLeft, Gauge, Fuel,
+    ExternalLink
 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { trpc } from "@/trpc/client"
@@ -22,7 +24,21 @@ export default function HostManageBookingPage() {
 
     const { data: booking, isLoading } = trpc.booking.getBookingDetails.useQuery({ id })
 
-    console.log("Booking details:", booking)
+    // trpc mutation for handover
+    const { mutateAsync: handoverBooking } = trpc.booking.handoverBooking.useMutation();
+
+    const handleHandover = async () => {
+        try {
+            await handoverBooking({
+                bookingId: id,
+                handoverStatus: "COMPLETED",
+            });
+            alert("Vehicle handover completed successfully!");
+        } catch (error) {
+            console.error("Error during handover:", error);
+            alert("An error occurred during handover. Please try again.");
+        }
+    }
 
     if (isLoading) return <Center h="80vh"><Spinner size="xl" color="teal.500" /></Center>
     if (!booking) return <Center h="80vh">Booking data not found.</Center>
@@ -86,46 +102,61 @@ export default function HostManageBookingPage() {
                         </SimpleGrid>
                     </Box>
 
+
                     {/* 2. INSPECTION & PHOTOS */}
-                    <Box p={8} border="1px solid" borderColor="gray.100" rounded="3xl">
-                        <Heading size="xs" fontWeight="black" mb={6} letterSpacing="0.1em">HANDOVER INSPECTION</Heading>
-                        <SimpleGrid columns={{ base: 2, md: 4 }} gap={4} mb={8}>
-                            <ImageUploadBox label="FRONT" />
-                            <ImageUploadBox label="REAR" />
-                            <ImageUploadBox label="LEFT" />
-                            <ImageUploadBox label="RIGHT" />
-                        </SimpleGrid>
+                    {
+                        booking?.pickupPhotos && booking.pickupPhotos.length > 0 && <Box p={8} border="1px solid" borderColor="gray.100" rounded="3xl">
+                            <Heading size="xs" fontWeight="black" mb={6} letterSpacing="0.1em">HANDOVER INSPECTION</Heading>
+                            <SimpleGrid columns={{ base: 2, md: 4 }} gap={4} mb={8}>
+                                {booking?.pickupPhotos.map((url, index) => (
+                                    <Box
+                                        key={index}
+                                        bg="white"
+                                        p={4}
+                                        w={'full'}
+                                        rounded="2xl"
+                                        border="1px solid"
+                                        borderColor="gray.200"
+                                        transition="all 0.2s"
+                                        _hover={{ borderColor: "emerald.400" }}
+                                    >
+                                        <Flex justify="space-between" align="center" mb={4}>
 
-                        <VStack align="stretch" gap={4}>
-                            <Box>
-                                <Text fontSize="xs" fontWeight="black" mb={2} color="gray.400">HOST NOTES</Text>
-                                <Textarea
-                                    placeholder="Note any existing scratches, fuel levels, or odometer reading..."
-                                    rounded="2xl"
-                                    bg="gray.50"
-                                    border="none"
-                                    p={4}
-                                    minH="100px"
-                                />
-                            </Box>
-                        </VStack>
-                    </Box>
+                                            <IconButton
+                                                size="xs"
+                                                onClick={() => window.open(url, "_blank")}
+                                                aria-label="View original"
+                                            >
+                                                <ExternalLink size={14} />
+                                            </IconButton>
+                                        </Flex>
 
-                    {/* 3. ACCEPT / REJECT ACTIONS */}
-                    <Box p={8} bg="black" rounded="3xl" color="white">
-                        <HStack gap={6} justify="space-between" direction={{ base: "column", md: "row" }}>
-                            <VStack align="flex-start" gap={0}>
-                                <Text fontSize="xs" fontWeight="black" color="gray.500">FINAL STEP</Text>
-                                <Heading size="md">Complete Handover</Heading>
-                            </VStack>
-                            <HStack gap={4}>
-                                <Button variant="ghost" color="red.400" fontWeight="black" size="lg">REPORT ISSUE</Button>
-                                <Button bg="teal.500" color="white" px={10} h="14" rounded="2xl" fontWeight="black" _hover={{ bg: "teal.400" }}>
-                                    ACCEPT & RELEASE CAR
-                                </Button>
-                            </HStack>
-                        </HStack>
-                    </Box>
+                                        <Box rounded="xl" overflow="hidden" bg="gray.50" border="1px solid" borderColor="gray.100">
+                                            <Image
+                                                src={url}
+                                                alt="KYC Document"
+                                                w="full"
+                                                h="full"
+                                                objectFit="contain"
+                                                p={2}
+
+                                            />
+                                        </Box>
+                                    </Box>
+                                ))}
+                            </SimpleGrid>
+
+                            {/* Key handover */}
+                            <Button variant="surface" colorPalette="teal" onClick={handleHandover}   >
+                                Handover Vehicle
+                            </Button>
+                        </Box>
+                    }
+
+
+
+
+
                 </Stack>
 
                 {/* RIGHT COLUMN: TIMELINE & LOGISTICS */}
@@ -163,21 +194,7 @@ export default function HostManageBookingPage() {
     )
 }
 
-// --- Internal UI Components ---
 
-function ImageUploadBox({ label }: { label: string }) {
-    return (
-        <VStack
-            bg="gray.50" border="2px dashed" borderColor="gray.200"
-            h="120px" rounded="2xl" justify="center" gap={1}
-            cursor="pointer" _hover={{ bg: "teal.50", borderColor: "teal.500" }}
-            transition="0.2s"
-        >
-            <Camera size={20} className="text-gray-400" />
-            <Text fontSize="10px" fontWeight="black" color="gray.500">{label}</Text>
-        </VStack>
-    )
-}
 
 function TimelineItem({ icon, title, value, time, isDone }: any) {
     return (
