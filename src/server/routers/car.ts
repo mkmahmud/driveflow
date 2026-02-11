@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { router, hostProcedure, publicProcedure } from '../trpc';
+import { router, hostProcedure, publicProcedure, protectedProcedure } from '../trpc';
 import { db } from '../db';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -118,6 +118,22 @@ export const carRouter = router({
 
     //  Get S3 Permission URL
     getUploadUrl: hostProcedure
+        .input(z.object({ fileType: z.string(), fileName: z.string() }))
+        .mutation(async ({ input }) => {
+            const key = `cars/${Date.now()}-${input.fileName}`;
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET_NAME,
+                Key: key,
+                ContentType: input.fileType,
+            });
+
+            const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+            const publicUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
+            return { signedUrl, publicUrl };
+        }),
+
+    getUploadUrlForAll: protectedProcedure
         .input(z.object({ fileType: z.string(), fileName: z.string() }))
         .mutation(async ({ input }) => {
             const key = `cars/${Date.now()}-${input.fileName}`;

@@ -3,7 +3,8 @@
 import {
     Box, Grid, Stack, Heading, Text, Badge, HStack, Flex,
     Button, Circle, Image, VStack, Center, Spinner,
-    SimpleGrid, Icon, Checkbox
+    SimpleGrid, Icon, Checkbox,
+    useDisclosure
 } from "@chakra-ui/react"
 import {
     MapPin, Fuel, Users, Timer, CreditCard,
@@ -16,6 +17,8 @@ import { useParams, useRouter } from "next/navigation"
 import { trpc } from "@/trpc/client"
 import { format, intervalToDuration, isAfter, isBefore } from "date-fns"
 import { useEffect, useState } from "react"
+import UserHandoverModal from "@/components/dashboard/user/modal/userHandoverModal"
+import { toaster } from "@/components/ui/toaster"
 
 export default function BookingDetailsPage() {
     const params = useParams()
@@ -24,9 +27,14 @@ export default function BookingDetailsPage() {
 
     // Change this to your actual primary color name or hex
     const primaryColor = "teal.500"
-    const primaryBg = "teal.50"
 
+    // 1. Manage the state here
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    // Trpc: Fetch booking details
     const { data: booking, isLoading } = trpc.booking.getBookingDetails.useQuery({ id })
+    const { mutateAsync: completeTrip } = trpc.booking.completeTrip.useMutation();
+
     const [timeLeft, setTimeLeft] = useState<any>(null)
     const [percentDone, setPercentDone] = useState(0)
 
@@ -65,27 +73,115 @@ export default function BookingDetailsPage() {
             // DYNAMIC CHECK: Look at the User model fields
             isAutoDone: (booking: any) => booking.user.isIdentityVerified
         },
-        { id: "Car Picked Up", title: "Vehicle Handover", icon: <MapPin size={16} /> },
-        { id: "Car Returned", title: "Return Inspection", icon: <Flag size={16} /> },
-        { id: "Settled", title: "Final Settlement", icon: <PackageCheck size={16} /> },
+        { id: "Vehicle Handover", title: "Vehicle Handover", icon: <MapPin size={16} /> },
+        { id: "Return Inspection", title: "Return Inspection", icon: <Flag size={16} /> },
+        { id: "Final Settlement", title: "Final Settlement", icon: <PackageCheck size={16} /> },
     ];
+
+    // Check Vehicle Handover Status
+    const isHandedOver = !!booking.journey?.find((p: any) => p.title == "Vehicle Handover");
+
+    // Check Return Inspection Status
+    const isReturned = !!booking.journey?.find((p: any) => p.title == "Return Inspection");
+
+    // Handel Complete trip
+    const completeTripHandler = async () => {
+        try {
+
+            await completeTrip({ bookingId: booking.id });
+            toaster.success({ title: "Trip Completed", description: "Thank you for using DriveFlow! We hope to see you again soon." });
+            router.refresh();
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     return (
         <Box maxW="1400px" mx="auto" p={{ base: 4, md: 12 }} bg="white">
 
-            {/* 1. ULTRA-MINIMAL PROGRESS BAR */}
-            <Box mb={16} position="relative">
+            {/* Receive Vehicle  */}
+
+            {
+                !isHandedOver ? booking.pickupPhotos && booking.pickupPhotos.length > 0 ? (
+                    <Box mb={8} p={4} border="1px solid" borderColor="green.300" borderRadius="xl" bg="green.50">
+                        <HStack>
+                            <ShieldCheck size={20} color="green" />
+                            <Text fontWeight="bold" color="green.800">
+                                Pickup photos have been uploaded.
+                            </Text>
+                        </HStack>
+                    </Box>
+                ) : <Box mb={8} p={4} >
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        colorPalette="teal"
+                        fontWeight="black"
+                        className="w-full"
+                    >
+                        Pick Up Vehicle
+                    </Button>
+
+                    <UserHandoverModal
+                        booking={booking}
+                        open={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        mode="pickup"
+                    />
+                </Box>
+                    : ''
+            }
+
+            {/* Return Options */}
+            {
+                isHandedOver && !isReturned && <Box mb={8} p={4} >
+                    <Button
+                        onClick={() => setIsModalOpen(true)}
+                        colorPalette="red"
+                        fontWeight="black"
+                        className="w-full"
+                    >
+                        Return Vehicle
+                    </Button>
+                    <UserHandoverModal
+                        booking={booking}
+                        open={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        mode="return"
+                    />
+
+                </Box>
+            }
+
+
+
+            {/* Progress Bar */}
+
+            {
+                booking.status === "COMPLETED" && <Box mb="16" p={4} border="1px solid" borderColor="gray.100" rounded="3xl" bg="green.50">
+                    <HStack gap={4}>
+                        <ShieldCheck size={20} color="green" />
+                        <Text fontWeight="bold" color="green.800">
+                            This trip is completed. Thank you for using DriveFlow!
+                        </Text>
+                    </HStack>
+                </Box>
+            }
+
+
+            <Box mb="16" position="relative">
                 <HStack justify="space-between" mb={3}>
                     <HStack>
                         <PulseCircle color={primaryColor} />
                         <Text fontSize="10px" fontWeight="black" letterSpacing="0.4em">LIVE RENTAL STATUS</Text>
                     </HStack>
-                    <Text fontSize="10px" fontWeight="black" color={primaryColor}>{Math.round(percentDone)}% JOURNEY COMPLETE</Text>
+                    <Text fontSize="10px" fontWeight="black" color={primaryColor}>{Math.round(booking.status === "COMPLETED" ? 100 : percentDone)}% JOURNEY COMPLETE</Text>
                 </HStack>
                 <Box h="2px" w="full" bg="gray.100">
-                    <Box h="full" w={`${percentDone}%`} bg={primaryColor} transition="width 1.5s cubic-bezier(0.65, 0, 0.35, 1)" />
+                    <Box h="full" w={`${booking.status === "COMPLETED" ? 100 : percentDone}%`} bg={primaryColor} transition="width 1.5s cubic-bezier(0.65, 0, 0.35, 1)" />
                 </Box>
             </Box>
+
+
 
             {/* 2. DUAL-GRID LAYOUT */}
             <Grid templateColumns={{ base: "1fr", xl: "1.4fr 0.6fr" }} gap={20}>
@@ -115,21 +211,25 @@ export default function BookingDetailsPage() {
                         <Badge variant="outline" borderColor={primaryColor} color={primaryColor} px={6} py={2} borderRadius="none" fontWeight="black">
                             {booking.status}
                         </Badge>
+
                     </Flex>
-
                     {/* Industrial Timer */}
-                    <Box border="4px solid" borderColor="black" p={12} position="relative">
-                        <Box position="absolute" top="-15px" left="30px" bg="white" px={4}>
-                            <Text fontSize="10px" fontWeight="black" letterSpacing="0.2em">COUNTDOWN TO RETURN</Text>
-                        </Box>
-                        <HStack gap={{ base: 6, md: 14 }} justify="center">
-                            <TimerUnit label="DAYS" value={timeLeft?.days} color="black" />
-                            <TimerUnit label="HOURS" value={timeLeft?.hours} color="black" />
-                            <TimerUnit label="MINS" value={timeLeft?.minutes} color="black" />
-                            <TimerUnit label="SECS" value={timeLeft?.seconds} color={primaryColor} />
-                        </HStack>
-                    </Box>
+                    {
+                        booking.status !== "COMPLETED" &&
 
+
+                        <Box border="4px solid" borderColor="black" p={12} position="relative">
+                            <Box position="absolute" top="-15px" left="30px" bg="white" px={4}>
+                                <Text fontSize="10px" fontWeight="black" letterSpacing="0.2em">COUNTDOWN TO RETURN</Text>
+                            </Box>
+                            <HStack gap={{ base: 6, md: 14 }} justify="center">
+                                <TimerUnit label="DAYS" value={timeLeft?.days} color="black" />
+                                <TimerUnit label="HOURS" value={timeLeft?.hours} color="black" />
+                                <TimerUnit label="MINS" value={timeLeft?.minutes} color="black" />
+                                <TimerUnit label="SECS" value={timeLeft?.seconds} color={primaryColor} />
+                            </HStack>
+                        </Box>
+                    }
                     {/* Timeline & Map Combo */}
 
                     <Box p={10} border="1px solid" borderColor="gray.100" borderRadius="3xl" bg="white">
@@ -220,16 +320,18 @@ export default function BookingDetailsPage() {
                                 <Text fontSize="4xl" fontWeight="900" letterSpacing="-0.05em">${booking.totalPrice}</Text>
                             </Flex>
                         </VStack>
-                        <Button colorScheme="teal" h="16" fontSize="sm" letterSpacing="0.2em" fontWeight="black" borderRadius="none">
-                            DOWNLOAD RECEIPT
-                        </Button>
+
                     </Stack>
 
                     {/* Sticky Mobile Actions */}
-                    <HStack gap={4}>
-                        <Button flex={1} variant="outline" h="14" borderRadius="none" borderColor="black" fontWeight="black" fontSize="xs">EXTEND TRIP</Button>
-                        <Button flex={1} bg="black" color="white" h="14" borderRadius="none" fontWeight="black" fontSize="xs" _hover={{ bg: primaryColor }}>FINISH TRIP</Button>
-                    </HStack>
+
+                    {
+                        isReturned && booking.status !== "COMPLETED" && <HStack gap={4}>
+
+                            <Button flex={1} bg="black" color="white" h="14" borderRadius="none" fontWeight="black" fontSize="xs" _hover={{ bg: primaryColor }} onClick={completeTripHandler} >FINISH TRIP</Button>
+                        </HStack>
+                    }
+
                 </Stack>
             </Grid>
         </Box>

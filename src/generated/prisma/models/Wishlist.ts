@@ -189,6 +189,7 @@ export type WishlistOrderByWithRelationInput = {
 
 export type WishlistWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  carId_userId?: Prisma.WishlistCarIdUserIdCompoundUniqueInput
   AND?: Prisma.WishlistWhereInput | Prisma.WishlistWhereInput[]
   OR?: Prisma.WishlistWhereInput[]
   NOT?: Prisma.WishlistWhereInput | Prisma.WishlistWhereInput[]
@@ -197,7 +198,7 @@ export type WishlistWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Wishlist"> | Date | string
   car?: Prisma.XOR<Prisma.CarScalarRelationFilter, Prisma.CarWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "carId_userId">
 
 export type WishlistOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -274,6 +275,11 @@ export type WishlistListRelationFilter = {
 
 export type WishlistOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type WishlistCarIdUserIdCompoundUniqueInput = {
+  carId: string
+  userId: string
 }
 
 export type WishlistCountOrderByAggregateInput = {

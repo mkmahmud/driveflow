@@ -180,8 +180,8 @@ export default function MyCarsPage() {
 
               <Stack p="6" gap="4">
                 <Flex justify="space-between" align="start">
-                  <Box>
-                    <Heading size="md" fontWeight="800" mb="1"  >{car.name}</Heading>
+                  <Box maxW="70%">
+                    <Heading size="md" fontWeight="800" mb="1" className="truncate">{car.name}</Heading>
                     <Flex align="center" gap="1" color="gray.500" fontSize="xs">
                       <MapPin size={12} /> {car.location}
                     </Flex>
@@ -237,9 +237,26 @@ export default function MyCarsPage() {
                   </IconButton>
                 </Flex>
               </Stack>
+              <Button
+                w={"full"}
+                bg="teal.600"
+                color="white"
+                flex="1"
+                rounded="xl"
+                h="12"
+                fontWeight="bold"
+              >
+
+                <Link href={`/dashboard/host/mycars/bookings/${car.id}`}>
+
+                  Manage
+                  Bookings
+                </Link>
+              </Button>
             </Box>
           ))}
         </SimpleGrid>
+
       </Container>
     </Box>
   )
