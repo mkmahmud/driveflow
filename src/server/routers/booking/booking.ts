@@ -189,6 +189,24 @@ export const bookingRouter = router({
             return { success: true };
         }),
 
+    // Finish Trip by client 
+    completeTrip: protectedProcedure
+        .input(z.object({ bookingId: z.string() }))
+        .mutation(async ({ input }) => {
+            await db.bookingPhase.create({
+                data: {
+                    bookingId: input.bookingId,
+                    title: "Final Settlement",
+                    status: "COMPLETED",
+                },
+            });
+
+            await db.booking.update({
+                where: { id: input.bookingId },
+                data: { status: "COMPLETED" },
+            });
+        }),
+
 
     // Get My Bookings
     getMyBookings: protectedProcedure
