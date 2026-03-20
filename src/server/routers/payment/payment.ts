@@ -4,7 +4,6 @@ import Stripe from "stripe";
 import { TRPCError } from "@trpc/server";
 
 
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const getStripe = () => {
     if (!process.env.STRIPE_SECRET_KEY) {
